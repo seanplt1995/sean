@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>全球实时新闻雷达</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>🌍 全球实时新闻雷达</h1>
+        <p>聚合多地区热门新闻，支持一键跳转主流新闻网站</p>
+      </div>
+      <div class="meta">
+        <p>上次刷新：<span id="lastUpdated">--</span></p>
+        <button id="refreshBtn">立即刷新</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="section-title">
+          <h2>🏆 各地区热榜</h2>
+          <p>按新闻源发布时间排序，默认显示前 10 条</p>
+        </div>
+        <div class="region-tabs" id="regionTabs"></div>
+        <div id="newsList" class="news-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>🔗 新闻网站入口</h2>
+          <p>快速直达世界主流媒体首页</p>
+        </div>
+        <div id="siteGrid" class="site-grid"></div>
+      </section>
+    </main>
+
+    <template id="newsItemTemplate">
+      <article class="news-item">
+        <div class="rank"></div>
+        <div class="content">
+          <a class="title" target="_blank" rel="noopener noreferrer"></a>
+          <p class="summary"></p>
+          <div class="meta-row">
+            <span class="source"></span>
+            <time></time>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
