@@ -27,6 +27,7 @@ const state = {
   activeRegion: '全球',
   cache: {}
 };
+const CACHE_STORAGE_KEY = 'globalNewsCache.v1';
 
 const regionTabsEl = document.getElementById('regionTabs');
 const newsListEl = document.getElementById('newsList');
@@ -86,7 +87,12 @@ function formatTime(pubDate) {
 
 async function fetchRss(rssUrl) {
   const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
-  const response = await fetch(proxyUrl);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  const response = await fetch(proxyUrl, { signal: controller.signal }).finally(() => {
+    clearTimeout(timeoutId);
+  });
   if (!response.ok) {
     throw new Error(`请求失败: ${response.status}`);
   }
@@ -111,6 +117,35 @@ async function fetchRss(rssUrl) {
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
   return items;
+}
+
+function loadCacheFromStorage() {
+  try {
+    const raw = localStorage.getItem(CACHE_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return;
+    if (!parsed.regions || typeof parsed.regions !== 'object') return;
+
+    state.cache = parsed.regions;
+    if (parsed.lastUpdated) {
+      lastUpdatedEl.textContent = formatTime(parsed.lastUpdated);
+    }
+  } catch (error) {
+    console.warn('读取本地缓存失败', error);
+  }
+}
+
+function persistCacheToStorage() {
+  try {
+    const payload = {
+      regions: state.cache,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(payload));
+  } catch (error) {
+    console.warn('写入本地缓存失败', error);
+  }
 }
 
 function renderNewsList(items) {
@@ -145,6 +180,7 @@ async function renderRegion(region, force = false) {
   try {
     const data = await fetchRss(REGION_FEEDS[region]);
     state.cache[region] = data;
+    persistCacheToStorage();
     renderNewsList(data);
     lastUpdatedEl.textContent = formatTime(new Date().toISOString());
   } catch (error) {
@@ -153,12 +189,12 @@ async function renderRegion(region, force = false) {
 }
 
 async function refreshAll() {
-  state.cache = {};
   await renderRegion(state.activeRegion, true);
 }
 
 refreshBtn.addEventListener('click', refreshAll);
 
+loadCacheFromStorage();
 buildSiteEntrances();
 buildRegionTabs();
 renderRegion(state.activeRegion);
