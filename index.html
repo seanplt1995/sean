@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人运动助手</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>个人运动助手</h1>
+        <p>创建计划、开始训练、记录进步。</p>
+      </header>
+
+      <section class="card">
+        <h2>今日训练计划</h2>
+        <form id="workout-form" class="grid">
+          <label>
+            动作名称
+            <input id="exercise" type="text" placeholder="如：深蹲" required />
+          </label>
+          <label>
+            组数
+            <input id="sets" type="number" min="1" max="20" value="3" required />
+          </label>
+          <label>
+            每组次数
+            <input id="reps" type="number" min="1" max="100" value="12" required />
+          </label>
+          <label>
+            休息时间（秒）
+            <input id="rest" type="number" min="10" max="300" value="60" required />
+          </label>
+          <button type="submit">添加到计划</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="row">
+          <h2>训练清单</h2>
+          <button id="clear-plan" class="ghost">清空</button>
+        </div>
+        <ul id="plan-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>训练计时器</h2>
+        <div class="timer">
+          <span id="timer-display">00:00</span>
+          <div class="row">
+            <button id="start-timer">开始休息</button>
+            <button id="stop-timer" class="ghost">停止</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>训练记录</h2>
+        <form id="log-form" class="grid">
+          <label>
+            日期
+            <input id="date" type="date" required />
+          </label>
+          <label>
+            时长（分钟）
+            <input id="duration" type="number" min="5" max="240" required />
+          </label>
+          <label>
+            感受
+            <select id="mood">
+              <option>轻松</option>
+              <option>适中</option>
+              <option>挑战</option>
+            </select>
+          </label>
+          <button type="submit">保存记录</button>
+        </form>
+        <ul id="history-list"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
