@@ -166,10 +166,10 @@ const ACTS = [
     rp: { decay: 0.78, bloom: 1.15, thresh: 0.45, bright: 0.36, pointScale: 4.0, heat: 0.55, nebula: 0.35, rdBg: 0.08, stars: 0.25, rdMix: 0.85, irid: 0.15, ca: 0.0035, caKick: 0.012, grain: 0.06, feed: 0.0545, kill: 0.062 } },
   { num: 'IV',   title: 'GYROID HYPER-WEAVE',     cn: '高维织物 · DROP I-B', t0: 30.04, mode: 3, blend: 0.35,
     bg: '#08030F', pal: ['#7B2CBF', '#FF007F', '#FF8AC4', '#F8F9FA'],
-    rp: { decay: 0.7, bloom: 1.05, thresh: 0.5, bright: 0.26, pointScale: 3.6, heat: 0.45, nebula: 0.25, rdBg: 0.1, gyroidBg: 0.6, stars: 0.1, rdMix: 0.35, irid: 0.45, ca: 0.0025, caKick: 0.01, grain: 0.06, feed: 0.029, kill: 0.057 } },
+    rp: { decay: 0.7, bloom: 1.1, thresh: 0.45, bright: 0.5, pointScale: 3.6, heat: 0.45, nebula: 0.25, rdBg: 0.1, gyroidBg: 0.6, stars: 0.1, rdMix: 0.35, irid: 0.45, ca: 0.0025, caKick: 0.01, grain: 0.06, feed: 0.029, kill: 0.057 } },
   { num: 'V',    title: 'DEEP SEA DICHROIC SILK', cn: '深海丝绸 · INTERLUDE', t0: 45.04, mode: 4, blend: 1.5,
     bg: '#03040A', pal: ['#0A9396', '#5FD3C8', '#F72585', '#FFD6EC'],
-    rp: { decay: 0.5, bloom: 1.1, thresh: 0.42, bright: 0.5, pointScale: 3.9, heat: 0.1, nebula: 0.8, rdBg: 0.3, stars: 0.0, rdMix: 0.0, irid: 0.7, aperture: 26, ca: 0.0016, caKick: 0.003, grain: 0.07, feed: 0.0367, kill: 0.0649 } },
+    rp: { decay: 0.5, bloom: 1.1, thresh: 0.42, bright: 1.05, pointScale: 3.9, heat: 0.1, nebula: 0.5, rdBg: 0.15, stars: 0.0, rdMix: 0.0, irid: 0.7, aperture: 16, ca: 0.0016, caKick: 0.003, grain: 0.07, feed: 0.0367, kill: 0.0649 } },
   { num: 'VI',   title: 'TESSERACT SAND CORE',    cn: '超新星裂变 · DROP II-A', t0: 59.57, mode: 5, blend: 0.0,
     bg: '#06030F', pal: ['#FF9E00', '#FFD38A', '#00BBF9', '#3A0CA3'],
     rp: { decay: 0.74, bloom: 1.2, thresh: 0.45, bright: 0.17, pointScale: 4.3, heat: 0.6, nebula: 0.75, rdBg: 0.25, stars: 0.5, rdMix: 0.25, irid: 0.3, ca: 0.003, caKick: 0.014, grain: 0.06, feed: 0.0545, kill: 0.062 } },
@@ -522,9 +522,9 @@ void main(){
       vec3 vw = vec3(dL.x, dL.z, dL.y)*LS*(0.42 + 0.12*uBass);
       float sp = length(vw); if (sp > 4.5) vw *= 4.5/sp;
       vec3 q = p - vec3(0.0, 0.06, 0.0);
-      float far = smoothstep(0.95, 1.5, length(q*vec3(1.0, 0.8, 1.0)));
+      float far = smoothstep(1.5, 2.2, length(q));
       vw = mix(vw, -normalize(q + 1e-4)*2.6, far);
-      v = mix(v, vw, 1.0 - exp(-dt*7.0));
+      v = mix(v, vw, 1.0 - exp(-dt*14.0));
       acc += curl(p*3.0 + uTime*0.4)*(0.12 + 0.35*uHigh*exp(-uHiAge*6.0));
       drag = 0.0;
       float lz = L.z/50.0;
@@ -602,7 +602,8 @@ void main(){
     vec3 Ld = normalize(vec3(0.35, 0.85, 0.55));
     float ndv = abs(dot(nn, Vd));
     float spec = pow(max(dot(reflect(-Ld, nn), Vd), 0.0), 22.0);
-    bright = mix(0.4 + 0.8*(1.0-ndv) + 2.2*spec + rip*1.2, 0.32, max(kt, 0.85*smoothstep(13.3, 13.76, lt)));
+    float kc = smoothstep(13.1, 13.7, lt);                     // grains pile into the vortex eye: keep the energy constant
+    bright = mix(mix(0.4 + 0.8*(1.0-ndv) + 2.2*spec + rip*1.2, 0.008, kc), 0.075, kt);
     cmix = mix(clamp(0.08 + 0.9*(1.0-ndv)*(1.0-ndv) + 0.1*sin(Y*2.0+t), 0.0, 1.0), 0.7 + 0.3*tx.w, kt);
     size = mix(1.0, 0.9, kt);
   }
@@ -804,6 +805,7 @@ void main(){
     float c = cos(uRot), s = sin(uRot);
     q = mat2(c, s, -s, c)*q*uZoom;
     col = texture(uPrev, uC + q/vec2(uAspect, 1.0)).rgb;
+    col *= 1.0 - 0.6*smoothstep(0.3, 0.62, length(q));     // zoom-feedback streaks must not pile up at the frame edge
   }
   col = any(isnan(col)) ? vec3(0.0) : min(col, vec3(48.0));
   o = vec4(col*uDecay, 1.0);
@@ -1468,7 +1470,7 @@ function simStep(t, dt, st, cam) {
   quad();
   G.ping = 1 - G.ping;
   S.prevSimT = t;
-  if (burst > 0) S.flash = 0.3;
+  if (burst > 0) S.flash = 0.09;
 }
 
 function advance(t, dt, live) {
@@ -1482,7 +1484,7 @@ function advance(t, dt, live) {
   if (t >= ACTS[6].t0 && t < ACTS[7].t0) rs = 0.16 + 1.2 * easeInOut(sstep(87.5, 89.4, t));
   else if (t >= ACTS[7].t0) rs = 1.36 * Math.exp(-(t - ACTS[7].t0) * 0.9);
   S.roll7 += rs * dt;
-  S.flash = (S.flash || 0) * Math.exp(-dt * 9);
+  S.flash = (S.flash || 0) * Math.exp(-dt * 12);
 }
 
 function renderFrame(t, dt, live) {
@@ -1576,7 +1578,7 @@ function renderFrame(t, dt, live) {
   if (st.i === 7) kal = rp.kaleido;
   let sing = 0;
   if (t > 13.2 && t < 15.04) sing = sstep(13.2, 14.0, t) * (1 - 0.65 * sstep(14.2, 14.7, t)) + 0.25 * sstep(14.7, 15.04, t);
-  if (t > 58.0 && t < 59.57) sing = 0.7 * sstep(58.2, 58.8, t) * (1 - 0.6 * sstep(58.8, 59.2, t));
+  if (t > 58.0 && t < 59.57) sing = 0.45 * sstep(58.2, 58.8, t) * (1 - 0.6 * sstep(58.8, 59.2, t));
   const cp = mulMat4Vec(proj, mulMat4Vec(L.view, [0, 0, 0, 1]));
   const singUV = [cp[0] / cp[3] * 0.5 + 0.5, cp[1] / cp[3] * 0.5 + 0.5];
   const caAmt = rp.ca + rp.caKick * S.kickAmp * Math.exp(-S.kickAge * 6) + (S.flash || 0) * 0.02;
