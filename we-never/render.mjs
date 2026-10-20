@@ -10,7 +10,7 @@
  *   --from <s> --to <s>  time range (default whole track; Douyin cut: --from 9.04 --to 45.04)
  *   --fps <n>          frame rate (default 60)
  *   --q <ultra|high|medium|low>  particle / resolution preset (default high)
- *   --hud <0|1>        burn the telemetry HUD into the video (default 0 = pure visuals)
+ *   --hud <0|1>        burn the telemetry HUD into the video (default 1; 0 = pure visuals)
  *   --exposure <x>     global exposure multiplier applied before tone mapping (default 1)
  *   --crf <n>          x264 quality (default 18, lower = better); --maxrate 30M caps the bitrate
  *   --chunk <frames>   video is written in resumable chunks (default 900 = 15 s @60fps); re-running the
@@ -46,7 +46,7 @@ const fps = Number(arg('fps', 60));
 const from = Number(arg('from', 0));
 const to = arg('to', null);
 const quality = arg('q', 'high');
-const hud = String(arg('hud', '0'));
+const hud = String(arg('hud', '1'));
 const exposure = String(arg('exposure', '1'));
 const crf = String(arg('crf', 18));
 const maxrate = String(arg('maxrate', '30M'));

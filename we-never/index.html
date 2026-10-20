@@ -177,9 +177,9 @@ const ACTS = [
   { num: 'VII',  title: 'CELESTIAL MANDALA DOME',   cn: '万花筒曼陀罗穹顶 · DROP II-B', t0: 75.04, mode: 6, blend: 0.45,
     bg: '#05030B', pal: ['#FF2A85', '#A855F7', '#38BDF8', '#FACC15'],
     rp: { decay: 0.66, bloom: 1.15, thresh: 0.45, bright: 0.42, pointScale: 4.2, heat: 0.35, nebula: 0.6, rdBg: 0.35, stars: 0.2, rdMix: 0.2, irid: 0.3, kaleido: 1.0, folds: 6, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.029, kill: 0.057 } },
-  { num: 'VIII', title: 'GOLDEN RIBBONS · EMBER LOOP', cn: '流金丝带 · 余烬循环 · OUTRO', t0: 89.57, mode: 7, blend: 1.6,
-    bg: '#000000', pal: ['#9C7A45', '#FDE68A', '#F3F4F6', '#FFFFFF'],
-    rp: { decay: 0.68, bloom: 1.0, thresh: 0.5, bright: 0.3, pointScale: 4.0, heat: 0.1, nebula: 0.2, rdBg: 0.05, stars: 0.12, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.001, caKick: 0.002, grain: 0.02, feed: 0.0545, kill: 0.062 } },
+  { num: 'VIII', title: 'EMBERS TO VOID',           cn: '余烬归零 · OUTRO',        t0: 89.57, mode: 7, blend: 1.6,
+    bg: '#000000', pal: ['#7F5539', '#B08D57', '#E5E5E5', '#FFFFFF'],
+    rp: { decay: 0.6, bloom: 0.9, thresh: 0.5, bright: 0.5, pointScale: 4.4, heat: 0.1, nebula: 0.25, rdBg: 0.1, stars: 0.3, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.0012, caKick: 0.002, grain: 0.03, feed: 0.0545, kill: 0.062 } },
 ];
 const RP_DEFAULT = { decay: 0.6, zoom: 1.0, rot: 0.0, bloom: 1.0, thresh: 0.5, exposure: 1.38, gamma: 0.84, ca: 0.002, caKick: 0.006,
   kaleido: 0.0, folds: 8, pointScale: 4.2, aperture: 0.0, bright: 0.14, irid: 0.0, rdMix: 0.0, heat: 0.3, nebula: 0.6,
@@ -714,24 +714,18 @@ void main(){
   }
 #else
   {
-    /* ── ACT VIII · champagne-gold & silver sand ribbons falling in laminar flow → funnel to the Act I stream ── */
+    /* ── ACT VIII · embers drifting down to the void ── */
     float lt = uLocal;
-    float j = floor(S.z*28.0);
-    vec3 hj = h33(vec3(j, j*1.7, 3.1));
-    float fun = smoothstep(9.43, 12.75, lt);                 // 99.0 s → 102.3 s
-    float yp = fract(S.x + lt*(0.07 + 0.05*hj.z));
-    float y = 1.95 - 3.9*yp;
-    float sway = (0.06 + 0.12*hj.y)*sin(y*(1.6 + hj.z) + uTime*(0.5 + 0.4*hj.x) + hj.z*TAU);
-    float tw = y*2.2 + hj.x*TAU + uTime*0.4;
-    float wid = (0.03 + 0.05*hj.z)*(S.y - 0.5);
-    vec3 T = vec3((hj.x - 0.5)*2.3 + sway + cos(tw)*wid, y, (hj.y - 0.5)*1.4 - 0.2 + sin(tw)*wid);
-    T.xz *= 1.0 - fun;
-    if (length(T - p) > 1.0 && lt > 1.8) { p = T; v = vec3(0.0); }
-    acc += spring(p, v, T, mix(6.0, 40.0, smoothstep(0.0, 1.8, lt)), 0.8);
-    drag = 0.3;
-    alpha = smoothstep(0.0, 0.06, yp)*(1.0 - smoothstep(0.9, 1.0, yp))*(1.0 - 0.5*smoothstep(4.0, 12.9, lt));
-    cmix = 0.3 + 0.45*hj.x + 0.1*(S.y - 0.5);
-    bright = (1.0 + 0.6*pow(abs(S.y - 0.5)*2.0, 4.0))*(1.0 - 0.75*fun);
+    acc += vec3(0.0, -0.2, 0.0);
+    acc += curl(p*1.4 + vec3(0.0, uTime*0.05, 0.0))*0.11;
+    drag = 1.5;
+    float te = 1.8 + pow(S.x, 0.8)*10.9;
+    alpha = 1.0 - smoothstep(te - 1.4, te, lt);
+    alpha *= 0.62 + 0.38*sin(uTime*(1.5 + S.y*3.5) + S.z*TAU);
+    cmix = 0.15 + 0.85*R.x;
+    bool fly = R.z > 0.9;
+    bright = fly ? 4.0 : 0.8 + 0.5*R.y;
+    size = fly ? 1.5 : 1.0;
   }
 #endif
 
@@ -1320,7 +1314,7 @@ function lastOnset(list, t) {
 const S = {
   an: null, audioBuf: null, ready: false, demo: false, playing: false, t: 0, prevT: 0,
   prevSimT: 0, bass: 0, mid: 0, high: 0, levels: [0, 0, 0], kickAge: 9, kickAmp: 0, hiAge: 9, hiCount: 0, midAge: 9, ripple: [0, 0, 9, 0],
-  tunnelZ: 0, roll7: 0, entropy: 0, bassHist: new Float32Array(96), hudOn: QS.get('hud') === '1',
+  tunnelZ: 0, roll7: 0, entropy: 0, bassHist: new Float32Array(96), hudOn: QS.get('hud') !== '0',
   demoStart: 0, demoOffset: 0, fpsEMA: 60,
 };
 const audio = { el: null, ctx: null, src: null, analyser: null, dest: null, freq: null, url: null };
@@ -1393,10 +1387,9 @@ function cameraFor(i, t, lt) {
       break;
     }
     default: {
-      // un-roll the tunnel camera and settle into a frontal view of the falling ribbons
-      const w = easeInOut(sstep(0, 2.5, lt));
-      const rr = ((((S.roll7 + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) - Math.PI) * (1 - w);
-      c.pos = v3.lerp([0, 0, 1.15], [0, 0.1, 2.7], w); c.tgt = v3.lerp([0, 0, -2], [0, 0, 0], w); c.fov = lerp(82, 52, w);
+      // the tunnel camera keeps drifting, its roll decaying, while the embers fall through the frame
+      const rr = (((S.roll7 + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+      c.pos = [0, 0, 1.15]; c.tgt = [0, -0.06 * sstep(0, 8, lt), -2]; c.fov = lerp(82, 74, sstep(0, 12, lt));
       c.up = [Math.sin(rr), Math.cos(rr), 0];
     }
   }
