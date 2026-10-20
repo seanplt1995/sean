@@ -157,32 +157,32 @@ const hex = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255)
 const ACTS = [
   { num: 'I',    title: 'ABYSSAL SAND TRICKLE',   cn: '序章 · 暗涌',       t0: 0.00,  mode: 0, blend: 0.0,
     bg: '#050508', pal: ['#8C6A1E', '#D4AF37', '#F1D592', '#E2E8F0'],
-    rp: { decay: 0.62, bloom: 0.85, thresh: 0.55, bright: 0.28, pointScale: 4.6, heat: 0.25, nebula: 0.55, rdBg: 0.25, stars: 0.15, rdMix: 0.0, irid: 0.0, ca: 0.0012, caKick: 0.004, grain: 0.055, feed: 0.0545, kill: 0.062 } },
+    rp: { decay: 0.62, bloom: 0.85, thresh: 0.55, bright: 0.28, pointScale: 4.6, heat: 0.25, nebula: 0.55, rdBg: 0.25, stars: 0.15, rdMix: 0.0, irid: 0.0, ca: 0.0012, caKick: 0.004, grain: 0.03, feed: 0.0545, kill: 0.062 } },
   { num: 'II',   title: 'ZERO-GRAVITY COLLAPSE',  cn: '真空坍缩',          t0: 9.04,  mode: 1, blend: 1.2,
     bg: '#090D16', pal: ['#1B3A5C', '#38BDF8', '#A5E4FF', '#FFFFFF'],
-    rp: { decay: 0.72, bloom: 1.05, thresh: 0.5, bright: 0.24, pointScale: 4.2, heat: 0.4, nebula: 0.7, rdBg: 0.2, stars: 0.35, rdMix: 0.0, irid: 0.25, ca: 0.0015, caKick: 0.003, grain: 0.05, feed: 0.0367, kill: 0.0649 } },
+    rp: { decay: 0.72, bloom: 1.05, thresh: 0.5, bright: 0.24, pointScale: 4.2, heat: 0.4, nebula: 0.7, rdBg: 0.2, stars: 0.35, rdMix: 0.0, irid: 0.25, ca: 0.0015, caKick: 0.003, grain: 0.03, feed: 0.0367, kill: 0.0649 } },
   { num: 'III',  title: 'SUPERNOVA SANDSTORM',    cn: '星云沙暴 · DROP I-A', t0: 15.04, mode: 2, blend: 0.0,
     bg: '#0B0719', pal: ['#FF8A00', '#FFB703', '#00F5D4', '#D9FFF8'],
-    rp: { decay: 0.78, bloom: 1.15, thresh: 0.45, bright: 0.36, pointScale: 4.0, heat: 0.55, nebula: 0.35, rdBg: 0.08, stars: 0.25, rdMix: 0.85, irid: 0.15, ca: 0.0035, caKick: 0.012, grain: 0.06, feed: 0.0545, kill: 0.062 } },
+    rp: { decay: 0.78, bloom: 1.15, thresh: 0.45, bright: 0.36, pointScale: 4.0, heat: 0.55, nebula: 0.35, rdBg: 0.08, stars: 0.25, rdMix: 0.85, irid: 0.15, ca: 0.0035, caKick: 0.012, grain: 0.03, feed: 0.0545, kill: 0.062 } },
   { num: 'IV',   title: 'GYROID HYPER-WEAVE',     cn: '高维织物 · DROP I-B', t0: 30.04, mode: 3, blend: 0.35,
     bg: '#08030F', pal: ['#7B2CBF', '#FF007F', '#FF8AC4', '#F8F9FA'],
-    rp: { decay: 0.7, bloom: 1.1, thresh: 0.45, bright: 0.5, pointScale: 3.6, heat: 0.45, nebula: 0.25, rdBg: 0.1, gyroidBg: 0.6, stars: 0.1, rdMix: 0.35, irid: 0.45, ca: 0.0025, caKick: 0.01, grain: 0.06, feed: 0.029, kill: 0.057 } },
+    rp: { decay: 0.7, bloom: 1.1, thresh: 0.45, bright: 0.5, pointScale: 3.6, heat: 0.45, nebula: 0.25, rdBg: 0.1, gyroidBg: 0.6, stars: 0.1, rdMix: 0.35, irid: 0.45, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.029, kill: 0.057 } },
   { num: 'V',    title: 'DEEP SEA DICHROIC SILK', cn: '深海丝绸 · INTERLUDE', t0: 45.04, mode: 4, blend: 1.5,
     bg: '#03040A', pal: ['#0A9396', '#5FD3C8', '#F72585', '#FFD6EC'],
-    rp: { decay: 0.5, bloom: 1.1, thresh: 0.42, bright: 1.05, pointScale: 3.9, heat: 0.1, nebula: 0.5, rdBg: 0.15, stars: 0.0, rdMix: 0.0, irid: 0.7, aperture: 16, ca: 0.0016, caKick: 0.003, grain: 0.07, feed: 0.0367, kill: 0.0649 } },
+    rp: { decay: 0.5, bloom: 1.1, thresh: 0.42, bright: 1.05, pointScale: 3.9, heat: 0.1, nebula: 0.5, rdBg: 0.15, stars: 0.0, rdMix: 0.0, irid: 0.7, aperture: 16, ca: 0.0016, caKick: 0.003, grain: 0.03, feed: 0.0367, kill: 0.0649 } },
   { num: 'VI',   title: 'TESSERACT SAND CORE',    cn: '超新星裂变 · DROP II-A', t0: 59.57, mode: 5, blend: 0.0,
     bg: '#06030F', pal: ['#FF9E00', '#FFD38A', '#00BBF9', '#3A0CA3'],
-    rp: { decay: 0.74, bloom: 1.2, thresh: 0.45, bright: 0.17, pointScale: 4.3, heat: 0.6, nebula: 0.75, rdBg: 0.25, stars: 0.5, rdMix: 0.25, irid: 0.3, ca: 0.003, caKick: 0.014, grain: 0.06, feed: 0.0545, kill: 0.062 } },
+    rp: { decay: 0.74, bloom: 1.2, thresh: 0.45, bright: 0.17, pointScale: 4.3, heat: 0.6, nebula: 0.75, rdBg: 0.25, stars: 0.5, rdMix: 0.25, irid: 0.3, ca: 0.003, caKick: 0.014, grain: 0.03, feed: 0.0545, kill: 0.062 } },
   { num: 'VII',  title: 'CELESTIAL MANDALA DOME', cn: '万花筒神殿 · DROP II-B', t0: 75.04, mode: 6, blend: 0.45,
     bg: '#05030B', pal: ['#FF006E', '#8338EC', '#3A86FF', '#FFBE0B'],
-    rp: { decay: 0.66, bloom: 1.15, thresh: 0.45, bright: 0.42, pointScale: 4.2, heat: 0.35, nebula: 0.6, rdBg: 0.35, stars: 0.2, rdMix: 0.2, irid: 0.35, kaleido: 1.0, folds: 6, ca: 0.0025, caKick: 0.01, grain: 0.06, feed: 0.029, kill: 0.057 } },
+    rp: { decay: 0.66, bloom: 1.15, thresh: 0.45, bright: 0.42, pointScale: 4.2, heat: 0.35, nebula: 0.6, rdBg: 0.35, stars: 0.2, rdMix: 0.2, irid: 0.35, kaleido: 1.0, folds: 6, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.029, kill: 0.057 } },
   { num: 'VIII', title: 'EMBERS TO VOID',         cn: '余烬归零 · OUTRO',   t0: 89.57, mode: 7, blend: 1.6,
     bg: '#000000', pal: ['#7F5539', '#B08D57', '#E5E5E5', '#FFFFFF'],
-    rp: { decay: 0.6, bloom: 0.9, thresh: 0.5, bright: 0.5, pointScale: 4.4, heat: 0.1, nebula: 0.25, rdBg: 0.1, stars: 0.3, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.0012, caKick: 0.002, grain: 0.06, feed: 0.0545, kill: 0.062 } },
+    rp: { decay: 0.6, bloom: 0.9, thresh: 0.5, bright: 0.5, pointScale: 4.4, heat: 0.1, nebula: 0.25, rdBg: 0.1, stars: 0.3, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.0012, caKick: 0.002, grain: 0.03, feed: 0.0545, kill: 0.062 } },
 ];
 const RP_DEFAULT = { decay: 0.6, zoom: 1.0, rot: 0.0, bloom: 1.0, thresh: 0.5, exposure: 1.0, ca: 0.002, caKick: 0.006,
   kaleido: 0.0, folds: 8, pointScale: 4.2, aperture: 0.0, bright: 0.14, irid: 0.0, rdMix: 0.0, heat: 0.3, nebula: 0.6,
-  rdBg: 0.25, gyroidBg: 0.0, stars: 0.2, feed: 0.0545, kill: 0.062, grain: 0.06, vignette: 0.42 };
+  rdBg: 0.25, gyroidBg: 0.0, stars: 0.2, feed: 0.0545, kill: 0.062, grain: 0.03, vignette: 0.42 };
 for (const a of ACTS) { a.rp = Object.assign({}, RP_DEFAULT, a.rp); a.bgc = hex(a.bg); a.palc = a.pal.map(hex); }
 const KEY_T = { DROP1: 15.04, DROP2: 59.57 };
 const BURSTS = [{ t: 15.04, amp: 3.2 }, { t: 59.57, amp: 3.0 }];
@@ -1539,7 +1539,8 @@ function renderFrame(t, dt, live) {
     use(G.progs.part, {
       uPos: (G.ping === 0 ? r.simA : r.simB)[0], uVel: (G.ping === 0 ? r.simA : r.simB)[1], uAux: (G.ping === 0 ? r.simA : r.simB)[2],
       uSeed: r.seed, uRD: r.rd[G.rdPing], uView: L.view, uProj: proj, uSim: sim, uPointScale: rp.pointScale,
-      uFocus: dist, uAperture: rp.aperture, uBright: rp.bright * (262144 / r.N) * (1.15 - rp.decay * 0.55) * (1 + 0.35 * S.bass),
+      // (1 − per-frame decay) normalises the feedback trail: a still grain settles at the same brightness at any fps
+      uFocus: dist, uAperture: rp.aperture, uBright: rp.bright * (262144 / r.N) * 1.25 * (1 - decay) * (1 + 0.35 * S.bass),
       uTime: t, uResScale: r.H / 1920, uIrid: rp.irid, uRDMix: rp.rdMix, uHeat: rp.heat, uPal: st.pal.flat(), uCamPos: cam.pos,
       uHue: S.mid * 0.28 * Math.sin(t * 0.23) * (st.i === 0 || st.i === 7 ? 0.3 : 1),
     });
