@@ -6,3 +6,5 @@
 *.webm
 preview/
 node_modules/
+output/
+*.zip
