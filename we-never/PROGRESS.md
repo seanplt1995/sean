@@ -15,8 +15,15 @@
 - 第 VII 幕：8 层叶序 + 玫瑰窗环/辐条的曼陀罗隧道 —— 很好（四角有少量放射线，属“跃迁”效果）
 - 第 VIII 幕：余烬与萤火飘落，102.4 s 归零 —— 好
 
-## 正式渲染
-- 命令：`node render.mjs --audio <mp3> --fps 60 --crf 18 --out WeNever_full_1080x1920_60fps.mp4`
-- 本容器（无显卡，SwiftShader）约 0.8 s/帧，全片 6152 帧约 85 分钟；有显卡的电脑加 `--headed` 快很多。
-- 抖音 36 秒切片可从成片裁出（重新编码保证首帧是关键帧）：
-  `ffmpeg -ss 9.04 -t 36 -i WeNever_full_1080x1920_60fps.mp4 -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 320k -movflags +faststart WeNever_douyin_09-45.mp4`
+## 正式渲染（已完成）
+- 完整版 `WeNever_full_1080x1920_60fps.mp4`：102.48 s · 1080×1920 · 60 fps · H.264 High@4.2 + AAC 320k · 约 30 Mbps · 391 MB
+- 抖音切片 `WeNever_douyin_cut_09-45_1080x1920_60fps.mp4`：00:09.04–00:45.04 · 36 s · 138 MB
+- 两个视频都已在会话里发给用户（含原曲音频，所以没有提交到仓库）。
+- 渲染命令：`node render.mjs --audio <mp3> --fps 60 --out WeNever_full_1080x1920_60fps.mp4`
+  （默认 CRF 18、最高 30 Mbps；按 15 秒分段编码，中断后重新运行同一条命令会从上一个完成的分段继续）
+- 本容器（无显卡，SwiftShader）约 0.57 s/帧，全片 6152 帧约 59 分钟；有显卡的电脑加 `--headed` 快很多。
+- 切片命令：
+  `ffmpeg -ss 9.04 -t 36 -i WeNever_full_1080x1920_60fps.mp4 -c:v libx264 -crf 18 -preset slow -maxrate 30M -bufsize 60M -c:a aac -b:a 320k -movflags +faststart WeNever_douyin_09-45.mp4`
+
+## 关键修正记录
+- 拖尾反馈的粒子亮度乘以 (1 − 每帧衰减)，使静止粒子在任何帧率下亮度一致（之前 60 fps 比 10 fps 预览亮 2–3 倍）。
