@@ -156,37 +156,37 @@ const QUALITY = {
 /* ───────────────────────── musical timeline (measured) ───────────────────────── */
 const hex = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255].map((c) => Math.pow(c, 2.2)); };
 const ACTS = [
-  { num: 'I',    title: 'ABYSSAL SAND TRICKLE',   cn: '序章 · 暗涌',       t0: 0.00,  mode: 0, blend: 0.0,
-    bg: '#050508', pal: ['#8C6A1E', '#D4AF37', '#F1D592', '#E2E8F0'],
+  { num: 'I',    title: 'ABYSSAL SAND TRICKLE',     cn: '序章 · 暗涌',            t0: 0.00,  mode: 0, blend: 0.0,
+    bg: '#050508', pal: ['#8C6A1E', '#F4C430', '#F7DD8A', '#F1F5F9'],
     rp: { decay: 0.62, bloom: 0.85, thresh: 0.55, bright: 0.28, pointScale: 4.6, heat: 0.25, nebula: 0.55, rdBg: 0.25, stars: 0.15, rdMix: 0.0, irid: 0.0, ca: 0.0012, caKick: 0.004, grain: 0.03, feed: 0.0545, kill: 0.062 } },
-  { num: 'II',   title: 'ZERO-GRAVITY COLLAPSE',  cn: '真空坍缩',          t0: 9.04,  mode: 1, blend: 1.2,
-    bg: '#090D16', pal: ['#1B3A5C', '#38BDF8', '#A5E4FF', '#FFFFFF'],
-    rp: { decay: 0.72, bloom: 1.05, thresh: 0.5, bright: 0.24, pointScale: 4.2, heat: 0.4, nebula: 0.7, rdBg: 0.2, stars: 0.35, rdMix: 0.0, irid: 0.25, ca: 0.0015, caKick: 0.003, grain: 0.03, feed: 0.0367, kill: 0.0649 } },
-  { num: 'III',  title: 'SUPERNOVA SANDSTORM',    cn: '星云沙暴 · DROP I-A', t0: 15.04, mode: 2, blend: 0.0,
-    bg: '#0B0719', pal: ['#FF8A00', '#FFB703', '#00F5D4', '#D9FFF8'],
-    rp: { decay: 0.78, bloom: 1.15, thresh: 0.45, bright: 0.36, pointScale: 4.0, heat: 0.55, nebula: 0.35, rdBg: 0.08, stars: 0.25, rdMix: 0.85, irid: 0.15, ca: 0.0035, caKick: 0.012, grain: 0.03, feed: 0.0545, kill: 0.062 } },
-  { num: 'IV',   title: 'GYROID HYPER-WEAVE',     cn: '高维织物 · DROP I-B', t0: 30.04, mode: 3, blend: 0.35,
-    bg: '#08030F', pal: ['#7B2CBF', '#FF007F', '#FF8AC4', '#F8F9FA'],
-    rp: { decay: 0.7, bloom: 1.1, thresh: 0.45, bright: 0.5, pointScale: 3.6, heat: 0.45, nebula: 0.25, rdBg: 0.1, gyroidBg: 0.6, stars: 0.1, rdMix: 0.35, irid: 0.45, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.029, kill: 0.057 } },
-  { num: 'V',    title: 'DEEP SEA DICHROIC SILK', cn: '深海丝绸 · INTERLUDE', t0: 45.04, mode: 4, blend: 1.5,
-    bg: '#03040A', pal: ['#0A9396', '#5FD3C8', '#F72585', '#FFD6EC'],
-    rp: { decay: 0.5, bloom: 1.1, thresh: 0.42, bright: 1.05, pointScale: 3.9, heat: 0.1, nebula: 0.5, rdBg: 0.15, stars: 0.0, rdMix: 0.0, irid: 0.7, aperture: 16, ca: 0.0016, caKick: 0.003, grain: 0.03, feed: 0.0367, kill: 0.0649 } },
-  { num: 'VI',   title: 'TESSERACT SAND CORE',    cn: '超新星裂变 · DROP II-A', t0: 59.57, mode: 5, blend: 0.0,
-    bg: '#06030F', pal: ['#FF9E00', '#FFD38A', '#00BBF9', '#3A0CA3'],
-    rp: { decay: 0.74, bloom: 1.2, thresh: 0.45, bright: 0.17, pointScale: 4.3, heat: 0.6, nebula: 0.75, rdBg: 0.25, stars: 0.5, rdMix: 0.25, irid: 0.3, ca: 0.003, caKick: 0.014, grain: 0.03, feed: 0.0545, kill: 0.062 } },
-  { num: 'VII',  title: 'CELESTIAL MANDALA DOME', cn: '万花筒神殿 · DROP II-B', t0: 75.04, mode: 6, blend: 0.45,
-    bg: '#05030B', pal: ['#FF006E', '#8338EC', '#3A86FF', '#FFBE0B'],
-    rp: { decay: 0.66, bloom: 1.15, thresh: 0.45, bright: 0.42, pointScale: 4.2, heat: 0.35, nebula: 0.6, rdBg: 0.35, stars: 0.2, rdMix: 0.2, irid: 0.35, kaleido: 1.0, folds: 6, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.029, kill: 0.057 } },
-  { num: 'VIII', title: 'EMBERS TO VOID',         cn: '余烬归零 · OUTRO',   t0: 89.57, mode: 7, blend: 1.6,
-    bg: '#000000', pal: ['#7F5539', '#B08D57', '#E5E5E5', '#FFFFFF'],
-    rp: { decay: 0.6, bloom: 0.9, thresh: 0.5, bright: 0.5, pointScale: 4.4, heat: 0.1, nebula: 0.25, rdBg: 0.1, stars: 0.3, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.0012, caKick: 0.002, grain: 0.03, feed: 0.0545, kill: 0.062 } },
+  { num: 'II',   title: 'ARMILLARY ASTROLABE',      cn: '浑天星盘 · 冰晶蓄力',     t0: 9.04,  mode: 1, blend: 1.2,
+    bg: '#090D16', pal: ['#1E4D6B', '#56CFE1', '#FFD166', '#FFF6DA'],
+    rp: { decay: 0.7, bloom: 1.05, thresh: 0.5, bright: 0.22, pointScale: 4.0, heat: 0.3, nebula: 0.6, rdBg: 0.15, stars: 0.35, rdMix: 0.0, irid: 0.2, ca: 0.0012, caKick: 0.003, grain: 0.03, feed: 0.0367, kill: 0.0649 } },
+  { num: 'III',  title: 'SUPERNOVA SANDSTORM',      cn: '双螺旋星云沙暴 · DROP I-A', t0: 15.04, mode: 2, blend: 0.0,
+    bg: '#0B0719', pal: ['#FF8A00', '#FFCA3A', '#00F5D4', '#D9FFF8'],
+    rp: { decay: 0.78, bloom: 1.15, thresh: 0.45, bright: 0.36, pointScale: 4.0, heat: 0.55, nebula: 0.35, rdBg: 0.08, stars: 0.25, rdMix: 0.85, irid: 0.15, ca: 0.0012, caKick: 0.0042, grain: 0.015, feed: 0.0545, kill: 0.062 } },
+  { num: 'IV',   title: 'HOPF FIBRATION WEAVE',     cn: '四维霍普夫流光织物 · DROP I-B', t0: 30.04, mode: 3, blend: 0.6,
+    bg: '#07040C', pal: ['#FF2A85', '#00F5D4', '#FFD166', '#FFF4D6'],
+    rp: { decay: 0.72, bloom: 1.1, thresh: 0.45, bright: 0.48, pointScale: 3.8, heat: 0.4, nebula: 0.4, rdBg: 0.1, gyroidBg: 0.0, stars: 0.25, rdMix: 0.2, irid: 0.2, ca: 0.0018, caKick: 0.006, grain: 0.03, feed: 0.029, kill: 0.057 } },
+  { num: 'V',    title: 'DICHROIC SILK · CHLADNI VORTEX', cn: '深海虹彩丝绸 · 克拉尼漩涡', t0: 45.04, mode: 4, blend: 1.5,
+    bg: '#03040A', pal: ['#007C91', '#00E5FF', '#FF4D94', '#FFB703'],
+    rp: { decay: 0.5, bloom: 1.1, thresh: 0.42, bright: 1.05, pointScale: 3.9, heat: 0.1, nebula: 0.5, rdBg: 0.15, stars: 0.0, rdMix: 0.0, irid: 0.6, aperture: 16, ca: 0.0016, caKick: 0.003, grain: 0.03, feed: 0.0367, kill: 0.0649 } },
+  { num: 'VI',   title: 'TESSERACT CORE · DYSON KNOTS', cn: '超正方体星核 · 戴森纽结环 · DROP II-A', t0: 59.57, mode: 5, blend: 0.0,
+    bg: '#06030F', pal: ['#FFB703', '#FFE29A', '#38BDF8', '#9D4EDD'],
+    rp: { decay: 0.74, bloom: 1.2, thresh: 0.45, bright: 0.17, pointScale: 4.3, heat: 0.6, nebula: 0.75, rdBg: 0.25, stars: 0.5, rdMix: 0.15, irid: 0.25, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.0545, kill: 0.062 } },
+  { num: 'VII',  title: 'CELESTIAL MANDALA DOME',   cn: '万花筒曼陀罗穹顶 · DROP II-B', t0: 75.04, mode: 6, blend: 0.45,
+    bg: '#05030B', pal: ['#FF2A85', '#A855F7', '#38BDF8', '#FACC15'],
+    rp: { decay: 0.66, bloom: 1.15, thresh: 0.45, bright: 0.42, pointScale: 4.2, heat: 0.35, nebula: 0.6, rdBg: 0.35, stars: 0.2, rdMix: 0.2, irid: 0.3, kaleido: 1.0, folds: 6, ca: 0.0025, caKick: 0.01, grain: 0.03, feed: 0.029, kill: 0.057 } },
+  { num: 'VIII', title: 'GOLDEN RIBBONS · EMBER LOOP', cn: '流金丝带 · 余烬循环 · OUTRO', t0: 89.57, mode: 7, blend: 1.6,
+    bg: '#000000', pal: ['#9C7A45', '#FDE68A', '#F3F4F6', '#FFFFFF'],
+    rp: { decay: 0.68, bloom: 1.0, thresh: 0.5, bright: 0.3, pointScale: 4.0, heat: 0.1, nebula: 0.2, rdBg: 0.05, stars: 0.12, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.001, caKick: 0.002, grain: 0.02, feed: 0.0545, kill: 0.062 } },
 ];
-const RP_DEFAULT = { decay: 0.6, zoom: 1.0, rot: 0.0, bloom: 1.0, thresh: 0.5, exposure: 1.4, ca: 0.002, caKick: 0.006,
+const RP_DEFAULT = { decay: 0.6, zoom: 1.0, rot: 0.0, bloom: 1.0, thresh: 0.5, exposure: 1.38, gamma: 0.84, ca: 0.002, caKick: 0.006,
   kaleido: 0.0, folds: 8, pointScale: 4.2, aperture: 0.0, bright: 0.14, irid: 0.0, rdMix: 0.0, heat: 0.3, nebula: 0.6,
   rdBg: 0.25, gyroidBg: 0.0, stars: 0.2, feed: 0.0545, kill: 0.062, grain: 0.03, vignette: 0.42 };
 for (const a of ACTS) { a.rp = Object.assign({}, RP_DEFAULT, a.rp); a.bgc = hex(a.bg); a.palc = a.pal.map(hex); }
-const KEY_T = { DROP1: 15.04, DROP2: 59.57 };
-const BURSTS = [{ t: 15.04, amp: 3.2 }, { t: 59.57, amp: 3.0 }];
+const BURSTS = [{ t: 15.04, amp: 3.2 }, { t: 59.57, amp: 0.6 }];     // Drop II morphs (Chladni → tesseract) rather than detonates
+const SNARE_ROLLS = [[28.0, 30.04], [43.0, 45.04], [72.5, 74.5], [87.5, 89.57]];
 
 /* ─────────────────────────── math helpers ─────────────────────────── */
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
@@ -216,7 +216,6 @@ function perspective(fovDeg, aspect, near, far, shiftY) {
   const f = 1 / Math.tan(fovDeg * Math.PI / 360);
   return new Float32Array([f / aspect, 0, 0, 0, 0, f, 0, 0, 0, -shiftY, (far + near) / (near - far), -1, 0, 0, 2 * far * near / (near - far), 0]);
 }
-function mulMat4Vec(m, v) { return [m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3], m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3], m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3], m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3]]; }
 
 /* ════════════════════════════════ GLSL ════════════════════════════════ */
 const GLSL_COMMON = `
@@ -316,19 +315,10 @@ layout(location=1) out vec4 oVel;
 layout(location=2) out vec4 oAux;
 ${GLSL_COMMON}
 const float LS = 0.028;          // Lorenz → world scale
-const float GP = 0.55;           // gyroid period (world units)
 
 vec3 spring(vec3 p, vec3 v, vec3 T, float k, float z){
   k = min(k, 0.22/(uDt*uDt));
   return (T-p)*k - v*(2.0*sqrt(k)*z);
-}
-vec3 klein(float u, float v){
-  float cu=cos(u), su=sin(u), cv=cos(v), sv=sin(v);
-  float cu2=cu*cu, cu3=cu2*cu, cu4=cu2*cu2, cu5=cu4*cu, cu6=cu4*cu2, cu7=cu6*cu;
-  float x=-2.0/15.0*cu*(3.0*cv-30.0*su+90.0*cu4*su-60.0*cu6*su+5.0*cu*cv*su);
-  float y=-1.0/15.0*su*(3.0*cv-3.0*cu2*cv-48.0*cu4*cv+48.0*cu6*cv-60.0*su+5.0*cu*cv*su-5.0*cu3*cv*su-80.0*cu5*cv*su+80.0*cu7*cv*su);
-  float z=2.0/15.0*(3.0+5.0*cu*su)*sv;
-  return vec3(x-0.15, y-2.1, z);
 }
 vec4 rot4(vec4 p, float axy, float axw, float ayw, float azw){
   float c=cos(axy), s=sin(axy); p.xy=mat2(c,s,-s,c)*p.xy;
@@ -356,16 +346,78 @@ vec3 tesseract(vec4 S, vec3 R, float t){
   q = rot4(q, t*0.19, t*0.43, t*0.31, t*0.17);
   return q.xyz * (1.0/(2.9-q.w));
 }
-// thin event-horizon ring the collapsed grains expand into just before each drop
-vec3 haloRing(vec4 S, vec3 R, float k){
-  float a = S.x*TAU;
-  float r = mix(0.025, 0.36, k)*(1.0 + 0.02*(R.y - 0.5));
-  return vec3(cos(a)*r, sin(a)*r, (R.z - 0.5)*0.012);
+// ── Act II · seven concentric counter-rotating armillary rings (Möbius ribbons, 3-strand braids, 5° graduations)
+vec3 astrolabe(vec4 S, vec3 R, float t){
+  float k = floor(S.z*7.0);
+  float th = S.x*TAU;
+  float dir = mod(k, 2.0) < 0.5 ? 1.0 : -1.0;
+  float rad = 0.34 + 0.115*k;
+  float spin = dir*t*(0.25 + 0.05*k);
+  float a = th + spin;
+  vec3 radial = vec3(cos(a), sin(a), 0.0);
+  const vec3 axis = vec3(0.0, 0.0, 1.0);
+  vec3 pt;
+  if (R.x < 0.08) {
+    float g = floor(S.x*72.0);
+    float tick = g/72.0*TAU + spin;
+    pt = vec3(cos(tick), sin(tick), 0.0)*(rad + 0.03 + S.y*(mod(g, 6.0) < 0.5 ? 0.075 : 0.035));
+  } else if (dir > 0.0) {
+    float tw = th*0.5 + t*0.3;
+    pt = radial*rad + (radial*cos(tw) + axis*sin(tw))*(S.y - 0.5)*(0.05 + 0.012*k);
+  } else {
+    float ba = floor(S.y*3.0)*TAU/3.0 + th*9.0 - t*1.5;
+    pt = radial*rad + (radial*cos(ba) + axis*sin(ba))*0.022;
+  }
+  pt += sphereDir(R.yz)*0.0035;
+  pt = rotX(pt, 0.35 + k*0.42 + dir*t*0.21);
+  return rotY(pt, k*0.9 - dir*t*0.17);
 }
-vec3 projGyroid(vec3 w, float off){
-  vec3 q = w*(TAU/GP);
-  for (int i=0;i<3;i++){ float f=gyroid(q)-off; vec3 g=gyroidGrad(q); q -= f*g/max(dot(g,g),0.25); }
-  return q*(GP/TAU);
+// ── Act II · pre-drop: hexagonal ice-crystal lattice suspended across the whole frame
+vec3 iceLattice(vec4 S, vec3 R, float t, float grow, float tremble){
+  const float NX = 9.0, NY = 17.0, NZ = 4.0;
+  float n = floor(S.w*NX*NY*NZ);
+  float ix = mod(n, NX), iy = mod(floor(n/NX), NY), iz = floor(n/(NX*NY));
+  float sx = 0.38, sy = sx*0.866;
+  vec3 node = vec3((ix - (NX - 1.0)*0.5 + 0.5*mod(iy, 2.0))*sx, (iy - (NY - 1.0)*0.5)*sy, 0.9 - iz*0.9);
+  float L = 0.11;
+  float aa = floor(R.x*6.0)*PI/3.0 + iz*0.3;
+  vec2 d = vec2(cos(aa), sin(aa)), q;
+  if (R.y < 0.55) q = d*S.y*L;                                   // six arms
+  else if (R.y < 0.88) {                                         // fractal side branches at 60°
+    float b0 = (R.y < 0.7 ? 0.42 : 0.68)*L, sg = R.z < 0.5 ? 1.0 : -1.0;
+    q = d*b0 + vec2(cos(aa + sg*PI/3.0), sin(aa + sg*PI/3.0))*S.y*(L - b0)*0.75;
+  } else q = mix(d, vec2(cos(aa + PI/3.0), sin(aa + PI/3.0)), S.y)*0.55*L;   // hexagonal plate rim
+  vec3 local = rotY(rotX(vec3(q, 0.0), (fract(n*0.618) - 0.5)*0.9), (fract(n*0.382) - 0.5)*0.9 + t*0.4);
+  vec3 P = node*grow + local*(0.4 + 0.6*grow);
+  P += vec3(sin(t*53.0 + S.w*TAU*7.0), sin(t*47.0 + S.x*TAU*5.0), 0.0)*tremble;
+  return rotZ(P, t*0.08);
+}
+// ── Act IV · Hopf fibration: Villarceau circles of S³ (η, ξ₁, ξ₂), rotated in 4D and stereographically projected
+vec3 hopf(float eta, float delta, float s, float r4){
+  float x1 = s + delta*0.5, x2 = s - delta*0.5;
+  vec4 q = vec4(cos(x1)*sin(eta), sin(x1)*sin(eta), cos(x2)*cos(eta), sin(x2)*cos(eta));
+  float c = cos(r4), sn = sin(r4);
+  q = vec4(c*q.x - sn*q.w, q.y, q.z, sn*q.x + c*q.w);
+  return q.xyz/max(1.0 - q.w, 0.12);
+}
+// ── Act V → VI · Chladni plate nodal lines (square plate mode (n,m)), Newton-projected
+float chladni(vec2 x, vec2 nm){ return cos(nm.x*PI*x.x)*cos(nm.y*PI*x.y) - cos(nm.y*PI*x.x)*cos(nm.x*PI*x.y); }
+vec2 chladniGrad(vec2 x, vec2 nm){
+  float n = nm.x*PI, m = nm.y*PI;
+  return vec2(-n*sin(n*x.x)*cos(m*x.y) + m*sin(m*x.x)*cos(n*x.y), -m*cos(n*x.x)*sin(m*x.y) + n*cos(m*x.x)*sin(n*x.y));
+}
+vec2 projChladni(vec2 x, vec2 a, vec2 b, float w){
+  for (int i = 0; i < 4; i++) {
+    float f = mix(chladni(x, a), chladni(x, b), w);
+    vec2 g = mix(chladniGrad(x, a), chladniGrad(x, b), w);
+    x -= f*g/max(dot(g, g), 0.5);
+  }
+  return x;
+}
+// ── Act VI · torus knot (p,q) around the y axis
+vec3 torusKnot(float p, float q, float R0, float r0, float phi){
+  float rr = R0 + r0*cos(q*phi);
+  return vec3(rr*cos(p*phi), r0*sin(q*phi), rr*sin(p*phi));
 }
 
 void main(){
@@ -426,39 +478,21 @@ void main(){
   }
 #elif MODE == 1
   {
-    /* ── ACT II · reversed gravity → fractal Klein hourglass → singularity → event-horizon ring ── */
+    /* ── ACT II · 7-ring armillary astrolabe → full-frame hexagonal ice-crystal lattice (pre-drop silence) ── */
     float lt = uLocal;
-    float tImp = 4.16, tTxt = 5.11;                // 13.20 s collapse · 14.15 s ring
-    if (lt < tImp) {
-      float lvl = S.w < 0.6 ? 0.0 : (S.w < 0.86 ? 1.0 : 2.0);
-      float sc = 0.36*pow(0.52, lvl);
-      float dir = mod(lvl,2.0) < 0.5 ? 1.0 : -1.35;
-      vec3 kb = klein(S.x*PI, S.y*TAU);
-      kb += snoise(kb*2.5 + uTime*0.2)*0.06*vec3(1.0,0.3,1.0);
-      vec3 T = rotY(rotZ(kb*sc, 0.12*sin(uTime*0.3)), uTime*0.38*dir);
-      float ramp = smoothstep(0.4, 2.6, lt);
-      acc += vec3(0.0, 0.62, 0.0)*(1.0-ramp);
-      acc += spring(p, v, T, 4.0 + 26.0*ramp, 0.55)*ramp;
-      acc += curl(p*2.0 + uTime*0.1)*(0.12 + 0.1*uMid);
-      drag = 0.55;
-      cmix = 0.15 + 0.6*S.y*(1.0-lvl*0.3) + lvl*0.25;
-      bright = 0.9 + lvl*0.35;
-    } else if (lt < tTxt) {
-      float k = (lt - tImp)/(tTxt - tImp);
-      vec3 T = sphereDir(R.xy)*0.018*pow(R.z,0.33);
-      acc += spring(p, v, T, 18.0 + 260.0*k*k, 0.62);
-      acc += cross(vec3(0.0,1.0,0.0), -p)*5.0*(1.0-k);
-      drag = 0.3;
-      cmix = 0.6 + 0.4*k;
-      bright = mix(0.6, 0.035, smoothstep(0.0, 0.7, k));
-    } else {
-      float k = smoothstep(0.0, 0.85, lt - tTxt);
-      vec3 T = haloRing(S, R, k);
-      acc += spring(p, v, T, 260.0, 0.9);
-      drag = 0.3;
-      cmix = 0.75 + 0.25*R.x;
-      bright = mix(0.035, 0.32, k);
-    }
+    float kl = smoothstep(4.46, 4.78, lt);                   // 13.5 s: rings unfold into the crystal lattice
+    vec3 TA = astrolabe(S, R, uTime);
+    vec3 TL = iceLattice(S, R, uTime, smoothstep(4.46, 4.9, lt), 0.0065*smoothstep(5.0, 5.96, lt));
+    vec3 T = mix(TA, TL, kl);
+    float ramp = smoothstep(0.2, 1.6, lt);
+    acc += vec3(0.0, 0.5, 0.0)*(1.0 - ramp);
+    acc += spring(p, v, T, mix(4.0, 70.0, ramp)*(1.0 + 3.0*kl), 0.75)*max(ramp, 0.05);
+    acc += curl(p*2.0 + uTime*0.1)*0.08*(1.0 - kl);
+    drag = 0.5;
+    float k = floor(S.z*7.0);
+    float ringC = R.x < 0.08 ? 0.97 : (mod(k, 2.0) < 0.5 ? 0.62 + 0.1*S.y : 0.3 + 0.1*S.y);
+    cmix = mix(ringC, R.y < 0.88 ? 0.3 + 0.25*R.z : 0.75, kl);
+    bright = mix(R.x < 0.08 ? 1.4 : 0.95, 3.4, kl);
   }
 #elif MODE == 2
   {
@@ -512,32 +546,25 @@ void main(){
   }
 #elif MODE == 3
   {
-    /* ── ACT IV · gyroid minimal-surface labyrinth (sphere-bounded) → liquid-metal droplets ── */
+    /* ── ACT IV · 4D Hopf fibration: interlocking ribbons of Villarceau circles on six nested tori ── */
     float lt = uLocal;
-    float RB = 1.05;
-    vec3 base = sphereDir(S.xy)*RB*pow(S.z, 0.3333);
-    vec3 w = rotY(rotX(base, uTime*0.11), uTime*0.17);          // seed points orbit → grains slide along the static surface
-    float off = S.w < 0.5 ? -0.28 : 0.28;
-    vec3 T = projGyroid(w, off);
-    vec3 nrm = normalize(gyroidGrad(T*(TAU/GP)) + vec3(1e-5));
-    alpha = 1.0 - smoothstep(RB - 0.12, RB + 0.02, length(T));
-    float sh = smoothstep(12.96, 13.3, lt);
-    if (sh > 0.0) {
-      vec3 cell = (floor(T/0.17)+0.5)*0.17;
-      vec3 Td = cell + sphereDir(R.xy)*0.024*pow(R.z, 0.33);
-      float fly = max(lt - 12.96, 0.0);
-      Td += normalize(cell + 1e-3)*fly*fly*0.32;
-      T = mix(T, Td, sh);
-      alpha = max(alpha, sh);
-    }
-    float k = mix(8.0, 30.0, smoothstep(0.0, 1.6, lt)) + sh*30.0;
-    acc += spring(p, v, T, k, 0.65);
-    acc += curl(p*2.4 + uTime*0.3)*(0.04 + 0.16*uBass*exp(-uKickAge*4.0));
-    if (uHiEvent > 0.5 && sh > 0.5) v += sphereDir(R.yz)*0.6;
+    float tor = floor(S.z*6.0), rib = floor(S.w*5.0);
+    float dir = mod(tor, 2.0) < 0.5 ? 1.0 : -1.0;
+    float eta = 0.6 + 0.13*tor;                              // keep every torus away from the projection pole
+    float roll = max(lt - 12.96, 0.0);                       // 43 s snare roll: fibres accelerate
+    float delta = rib*TAU/5.0 + (S.y - 0.5)*0.42 + tor*0.7 + dir*lt*0.05;
+    float s = S.x*TAU + dir*(lt*(0.55 + 0.12*tor) + roll*roll*0.9);
+    vec3 T = hopf(eta, delta, s, 0.4*sin(uTime*0.2))*0.7;     // bounded 4D tilt: fibres breathe, never blow up
+    T = rotY(rotX(T, 1.15), lt*0.1);
+    float ramp = smoothstep(0.0, 1.6, lt);
+    acc += spring(p, v, T, mix(6.0, 34.0, ramp), 0.7);
+    acc += curl(p*2.0 + uTime*0.2)*0.05;
     drag = 0.2;
-    float ndv = abs(dot(nrm, normalize(uCamPos - p)));
-    cmix = mix(0.12 + 0.55*(1.0 - ndv) + 0.2*S.y, 0.85 + 0.15*S.y, sh);
-    bright = mix(0.3 + 1.7*pow(1.0 - ndv, 2.0), 1.4, sh);
+    float ds = mod(s - mod(uKickAge*4.5, TAU) - rib*1.3 + PI, TAU) - PI;  // each 808 sends a light pulse racing along every fibre
+    float wave = exp(-ds*ds*6.0)*exp(-uKickAge*1.6)*uKickAmp;
+    float edge = pow(abs(S.y - 0.5)*2.0, 6.0);
+    cmix = mix(mod(tor, 3.0)/3.0 + 0.06 + 0.08*S.y, 0.97, min(wave, 1.0));
+    bright = (0.55 + 0.9*edge + 2.2*wave)*(0.35 + 0.65*smoothstep(0.1, 0.6, length(T)));
   }
 #elif MODE == 4
   {
@@ -564,62 +591,74 @@ void main(){
     float tilt = -0.55 + 0.08*sin(t*0.13), yaw = 0.22*sin(t*0.11) + (layer-1.0)*0.12;
     sp = rotY(rotX(sp, tilt), yaw); nn = rotY(rotX(nn, tilt), yaw);
     vec3 T = sp;
-    float kv = smoothstep(12.96, 13.76, lt);
-    if (kv > 0.0) {
-      float r = length(T.xy), a = atan(T.y, T.x);
-      a += kv*kv*2.6/(r + 0.12);
-      r *= 1.0 - 0.9*kv;
-      T = vec3(cos(a)*r, sin(a)*r, T.z*(1.0 - 0.85*kv));
+    // 57.5 s → 59.57 s: the silk folds into a full-frame Chladni cymatics mandala that spins up into the tesseract
+    float kc = smoothstep(12.46, 13.05, lt);
+    if (kc > 0.0) {
+      bool st2 = lt > 13.9;
+      vec2 mA = st2 ? vec2(5.0, 7.0) : vec2(3.0, 5.0), mB = st2 ? vec2(7.0, 11.0) : vec2(5.0, 7.0);
+      float mw = st2 ? smoothstep(13.9, 14.45, lt) : smoothstep(13.3, 13.9, lt);
+      vec2 xc = projChladni(S.xy*2.0 - 1.0, mA, mB, mw);
+      float spin = 0.3*(lt - 12.46) + 2.2*pow(max(lt - 12.96, 0.0), 2.0);
+      vec3 C = rotZ(vec3(xc*1.15, (R.z - 0.5)*0.01), spin);
+      T = mix(T, C, kc) + vec3(0.0, 0.0, sin(kc*PI)*0.35*(S.y - 0.5));
     }
-    float kt = smoothstep(13.76, 14.25, lt);
-    T = mix(T, haloRing(S, R, smoothstep(13.76, 14.5, lt)), kt);
-    acc += spring(p, v, T, mix(9.0, 90.0, max(kv*0.5, kt)), 0.75);
-    acc += curl(p*2.2 + t*0.1)*0.1*(1.0-kt);
+    acc += spring(p, v, T, mix(9.0, 90.0, kc), 0.75);
+    acc += curl(p*2.2 + t*0.1)*0.1*(1.0 - kc);
     drag = 0.25;
     vec3 Vd = normalize(uCamPos - p);
     vec3 Ld = normalize(vec3(0.35, 0.85, 0.55));
     float ndv = abs(dot(nn, Vd));
     float spec = pow(max(dot(reflect(-Ld, nn), Vd), 0.0), 22.0);
-    float kc = smoothstep(13.1, 13.7, lt);                     // grains pile into the vortex eye: keep the energy constant
-    bright = mix(mix(0.4 + 0.8*(1.0-ndv) + 2.2*spec + rip*1.2, 0.008, kc), 0.075, kt);
-    cmix = mix(clamp(0.08 + 0.9*(1.0-ndv)*(1.0-ndv) + 0.1*sin(Y*2.0+t), 0.0, 1.0), 0.75 + 0.25*R.x, kt);
-    size = mix(1.0, 0.9, kt);
+    bright = mix(0.4 + 1.05*(1.0-ndv) + 2.6*spec + rip*1.2, 0.3 + 0.25*smoothstep(13.9, 14.5, lt), kc);
+    cmix = mix(clamp(0.08 + 0.9*(1.0-ndv)*(1.0-ndv) + 0.1*sin(Y*2.0+t), 0.0, 1.0), fract(0.3 + length(S.xy - 0.5)*1.6 + 0.15*R.x), kc);
+    size = mix(1.0, 0.9, kc);
   }
 #elif MODE == 5
   {
-    /* ── ACT VI · counter-rotating 4D tesseract core + lattice shell + kick sparks ── */
+    /* ── ACT VI · golden 4D tesseract core · three braided torus-knot Dyson rings · 8-vertex sand jets · kick sparks ── */
     float lt = uLocal;
     float t = uTime;
     if (uEnter > 0.5) extra = 10.0;
     float pulse = 1.0 + 0.12*uKickAmp*exp(-uKickAge*7.0);
-    if (S.z < 0.44) {
+    if (S.z < 0.36) {
       vec3 T = tesseract(S, R, t)*0.3*pulse;
       acc += spring(p, v, T, 60.0, 0.6);
       acc += curl(p*4.0 + t)*0.15*uBass;
       cmix = 0.05 + 0.3*R.z;
-      bright = 1.1;
-    } else if (S.z < 0.86) {
-      float lat, lon;
-      if (R.x < 0.42) { lon = floor(S.x*14.0)/14.0*TAU; lat = S.y*PI; }
-      else if (R.x < 0.8) { lat = (floor(S.x*9.0)+0.5)/9.0*PI; lon = S.y*TAU; }
-      else { lon = (floor(S.x*42.0) + step(0.5, R.y)*0.5)/42.0*TAU; lat = (floor(S.y*5.0) + 0.25 + 0.5*R.z)/5.0*PI; }
-      vec3 dsh = vec3(sin(lat)*cos(lon), cos(lat), sin(lat)*sin(lon));
-      float rr = (0.74 + 0.045*snoise(dsh*3.0 + t*0.25))*(1.0 + 0.06*uKickAmp*exp(-uKickAge*5.0));
-      vec3 Tsh = rotY(rotX(dsh*rr, 0.42), -t*0.32);
-      float s = S.y*TAU;
-      float kr = 0.56 + 0.17*cos(7.0*s);
-      vec3 knot = vec3(kr*cos(3.0*s), 0.24*sin(7.0*s), kr*sin(3.0*s));
-      vec3 tng = normalize(vec3(-3.0*kr*sin(3.0*s), 1.68*cos(7.0*s), 3.0*kr*cos(3.0*s)));
-      vec3 bn = normalize(cross(tng, vec3(0.0,1.0,0.0)) + 1e-4);
-      vec3 nm = cross(bn, tng);
-      float ta = R.y*TAU;
-      knot += (bn*cos(ta) + nm*sin(ta))*0.045*sqrt(R.z);
-      knot = rotY(rotX(knot, 0.5), -t*0.45);
-      float km = smoothstep(7.9, 9.2, lt);
-      vec3 T = mix(Tsh, knot*1.08, km);
-      acc += spring(p, v, T, 34.0, 0.55);
-      cmix = 0.62 + 0.38*R.z;
-      bright = 1.8 + 0.8*step(0.8, R.x);
+      bright = 0.62;
+    } else if (S.z < 0.78) {
+      float kn = floor((S.z - 0.36)/0.14);
+      vec3 pq = kn < 0.5 ? vec3(5.0, 8.0, 1.0) : (kn < 1.5 ? vec3(7.0, 11.0, -1.0) : vec3(3.0, 7.0, 1.0));
+      float R0 = kn < 0.5 ? 0.78 : (kn < 1.5 ? 0.98 : 0.6);
+      float r0 = kn < 0.5 ? 0.15 : (kn < 1.5 ? 0.12 : 0.19);
+      float phi = S.x*TAU + pq.z*t*0.06;
+      vec3 c0 = torusKnot(pq.x, pq.y, R0, r0, phi);
+      vec3 tg = normalize(torusKnot(pq.x, pq.y, R0, r0, phi + 0.002) - c0);
+      vec3 nm = normalize(cross(tg, vec3(0.0, 1.0, 0.0)) + 1e-4);
+      vec3 bn = cross(tg, nm);
+      float ba = floor(S.y*3.0)*TAU/3.0 + phi*pq.y*3.0 + t*2.0*pq.z;
+      vec3 T = c0 + (nm*cos(ba) + bn*sin(ba))*0.028 + sphereDir(R.xy)*0.006*R.z;
+      T = rotY(T, pq.z*t*0.35)*(1.0 + 0.05*uKickAmp*exp(-uKickAge*5.0));
+      T = kn < 0.5 ? T : (kn < 1.5 ? rotX(T, PI/3.0) : rotZ(rotX(T, -PI/3.0), PI/3.0));
+      acc += spring(p, v, T, 34.0, 0.6);
+      cmix = kn < 0.5 ? 0.66 + 0.1*R.x : (kn < 1.5 ? 0.92 + 0.08*R.x : 0.08 + 0.15*R.x);
+      bright = 1.5 + 0.8*step(0.85, R.x);
+    } else if (S.z < 0.94) {
+      float vi = floor(S.x*8.0);
+      vec4 q4 = vec4(mod(vi, 2.0), mod(floor(vi*0.5), 2.0), floor(vi*0.25), 1.0)*2.0 - 1.0;
+      q4 = rot4(q4, t*0.19, t*0.43, t*0.31, t*0.17);
+      vec3 vp = q4.xyz*(1.0/(2.9 - q4.w))*0.3*pulse;
+      float age = fract(S.y + t*0.5 + S.w*0.3);
+      vec3 d0 = normalize(vp + 1e-4);
+      vec3 dv = normalize(mix(d0, vec3(0.0, d0.y >= 0.0 ? 1.0 : -1.0, 0.0), smoothstep(0.05, 0.75, age)));
+      vec3 e1 = normalize(cross(dv, vec3(0.31, 0.0, 0.95))), e2 = cross(dv, e1);
+      float sa = age*16.0 + S.w*TAU + t*2.2;
+      p = vp + dv*age*2.1 + (e1*cos(sa) + e2*sin(sa))*age*0.16 + sphereDir(R.xy)*0.01*age;   // kinematic jet stream
+      v = vec3(0.0);
+      alpha = smoothstep(0.0, 0.04, age)*pow(1.0 - age, 1.3)*smoothstep(0.0, 0.6, lt);
+      cmix = mix(0.08, 0.7, age);
+      bright = 3.6;
+      size = 1.2;
     } else {
       extra += dt;
       if (uKickEvent > 0.5 && extra > 0.55 && R.z < 0.6) {
@@ -671,26 +710,33 @@ void main(){
     alpha = smoothstep(0.0, 1.4, zz)*(1.0 - smoothstep(depth-0.9, depth-0.2, zz));
     cmix = fract(layer/NL + r*0.22 + uTime*0.03);
     bright = (role < 2.5 ? 1.5 : 0.85) + 0.5*pow(abs(cos(3.0*th)), 8.0);
+    if (R.y < 0.25 && r > 0.55) { cmix = R.x < 0.5 ? 0.97 : 0.67; bright *= 1.9; }
   }
 #else
   {
-    /* ── ACT VIII · embers drifting down to the void ── */
+    /* ── ACT VIII · champagne-gold & silver sand ribbons falling in laminar flow → funnel to the Act I stream ── */
     float lt = uLocal;
-    acc += vec3(0.0, -0.2, 0.0);
-    acc += curl(p*1.4 + vec3(0.0, uTime*0.05, 0.0))*0.11;
-    drag = 1.5;
-    float te = 1.8 + pow(S.x, 0.8)*10.9;
-    alpha = 1.0 - smoothstep(te - 1.4, te, lt);
-    alpha *= 0.62 + 0.38*sin(uTime*(1.5 + S.y*3.5) + S.z*TAU);
-    cmix = 0.15 + 0.85*R.x;
-    bool fly = R.z > 0.9;
-    bright = fly ? 4.0 : 0.8 + 0.5*R.y;
-    size = fly ? 1.5 : 1.0;
+    float j = floor(S.z*28.0);
+    vec3 hj = h33(vec3(j, j*1.7, 3.1));
+    float fun = smoothstep(9.43, 12.75, lt);                 // 99.0 s → 102.3 s
+    float yp = fract(S.x + lt*(0.07 + 0.05*hj.z));
+    float y = 1.95 - 3.9*yp;
+    float sway = (0.06 + 0.12*hj.y)*sin(y*(1.6 + hj.z) + uTime*(0.5 + 0.4*hj.x) + hj.z*TAU);
+    float tw = y*2.2 + hj.x*TAU + uTime*0.4;
+    float wid = (0.03 + 0.05*hj.z)*(S.y - 0.5);
+    vec3 T = vec3((hj.x - 0.5)*2.3 + sway + cos(tw)*wid, y, (hj.y - 0.5)*1.4 - 0.2 + sin(tw)*wid);
+    T.xz *= 1.0 - fun;
+    if (length(T - p) > 1.0 && lt > 1.8) { p = T; v = vec3(0.0); }
+    acc += spring(p, v, T, mix(6.0, 40.0, smoothstep(0.0, 1.8, lt)), 0.8);
+    drag = 0.3;
+    alpha = smoothstep(0.0, 0.06, yp)*(1.0 - smoothstep(0.9, 1.0, yp))*(1.0 - 0.5*smoothstep(4.0, 12.9, lt));
+    cmix = 0.3 + 0.45*hj.x + 0.1*(S.y - 0.5);
+    bright = (1.0 + 0.6*pow(abs(S.y - 0.5)*2.0, 4.0))*(1.0 - 0.75*fun);
   }
 #endif
 
-#if MODE == 2 || MODE == 5
-  bright *= 0.12 + 0.88*smoothstep(0.0, 0.8, uLocal);       // the detonation itself must not white out the frame
+#if MODE == 2
+  bright *= 0.45 + 0.55*smoothstep(0.0, 0.8, uLocal);       // the detonation itself must not white out the frame
 #endif
   v += acc*dt;
   v *= exp(-drag*dt);
@@ -838,15 +884,15 @@ void main(){
     float f = fbm(q + 1.7*w1 + 0.08*uMid);
     float m = smoothstep(-0.15, 0.75, f);
     vec3 neb = mix(uPal[0], uPal[2], smoothstep(0.1, 0.8, w1.x*0.5 + 0.5));
-    col += neb*m*m*(0.03 + 0.02*uBass)*uNebula;
-    col += uPal[1]*pow(max(f, 0.0), 4.0)*0.035*uNebula;
+    col += neb*m*m*(0.015 + 0.01*uBass)*uNebula;
+    col += uPal[1]*pow(max(f, 0.0), 4.0)*0.018*uNebula;
   }
   if (uRDW > 0.0) {
     vec2 ruv = vec2(atan(rd.x, -rd.z)/TAU*2.0, rd.y*0.75 + 0.5);
     ruv += 0.03*vec2(snoise(rd*3.0 + uTime*0.05), snoise(rd*3.0 + 7.0));
     float b = texture(uRD, ruv).g;
     float vein = smoothstep(0.16, 0.24, b) - smoothstep(0.24, 0.36, b);
-    col += mix(uPal[1], uPal[3], b*2.0)*vein*0.03*uRDW*(0.7 + 0.6*uKick);
+    col += mix(uPal[1], uPal[3], b*2.0)*vein*0.015*uRDW*(0.7 + 0.6*uKick);
   }
   if (uGyroid > 0.0) {
     float gk = TAU/0.55;
@@ -918,8 +964,7 @@ const FS_COMP = `#version 300 es
 precision highp float;
 in vec2 vUv;
 uniform sampler2D uScene, uBloom, uBgTex, uHud;
-uniform float uAspect, uTime, uKaleido, uFolds, uKAngle, uCA, uBloomStr, uExposure, uGrain, uVignette, uFade, uFlash, uHudOn, uHudAlpha;
-uniform float uSing; uniform vec2 uSingUV; uniform vec3 uSingCol;
+uniform float uAspect, uTime, uKaleido, uFolds, uKAngle, uCA, uBloomStr, uExposure, uGamma, uGrain, uVignette, uFade, uRays, uHudOn, uHudAlpha;
 uniform vec2 uFocusUV; uniform vec2 uRes;
 out vec4 o;
 float h12(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
@@ -956,19 +1001,16 @@ void main(){
   if (uKaleido <= 0.001) col = sampleFast();
   else if (uKaleido >= 0.999) col = sampleAll(kaleido(uv));
   else col = mix(sampleAll(uv), sampleAll(kaleido(uv)), uKaleido);
-  if (uSing > 0.0) {
-    vec2 d = (uv - uSingUV)*vec2(uAspect, 1.0);
-    float r2 = dot(d, d);
-    float core = exp(-r2*2600.0) + 0.0006/(r2 + 0.0006)*0.3;
-    float streak = exp(-abs(d.y)*900.0)*exp(-abs(d.x)*2.2);
-    col += uSingCol*uSing*(core*2.2 + streak*1.1);
+  if (uRays > 0.0) {                                   // volumetric god rays radiating from the optical centre
+    vec2 dir = (uFocusUV - uv)*(1.0/18.0), suv = uv;
+    vec3 sh = vec3(0.0); float w = 1.0;
+    for (int i = 0; i < 18; i++) { suv += dir; sh += texture(uBloom, suv).rgb*w; w *= 0.9; }
+    col += sh*uRays*0.09;
   }
-  vec2 fq = (vUv - uFocusUV)*vec2(uAspect, 1.0);
-  col += uFlash*vec3(1.0, 0.97, 0.92)*exp(-dot(fq, fq)*5.0);
   col = any(isnan(col)) ? vec3(0.0) : col;
   col *= uExposure;
   col = aces(col);
-  col = pow(col, vec3(1.0/2.2));
+  col = pow(col, vec3(uGamma/2.2));                    // display gamma with a midtone lift (uGamma < 1)
   vec2 vq = (vUv - uFocusUV)*vec2(uAspect, 1.0);
   col *= 1.0 - uVignette*smoothstep(0.35, 1.05, length(vq)*1.25);
   float gr = h12(vUv*uRes + fract(uTime*7.31)*vec2(113.0, 271.0)) - 0.5;
@@ -1277,8 +1319,8 @@ function lastOnset(list, t) {
 /* ════════════════════════════ playback state ════════════════════════════ */
 const S = {
   an: null, audioBuf: null, ready: false, demo: false, playing: false, t: 0, prevT: 0,
-  prevSimT: 0, flash: 0, bass: 0, mid: 0, high: 0, levels: [0, 0, 0], kickAge: 9, kickAmp: 0, hiAge: 9, hiCount: 0, midAge: 9, ripple: [0, 0, 9, 0],
-  tunnelZ: 0, roll7: 0, entropy: 0, bassHist: new Float32Array(96), hudOn: !RENDER || QS.get('hud') !== '0',
+  prevSimT: 0, bass: 0, mid: 0, high: 0, levels: [0, 0, 0], kickAge: 9, kickAmp: 0, hiAge: 9, hiCount: 0, midAge: 9, ripple: [0, 0, 9, 0],
+  tunnelZ: 0, roll7: 0, entropy: 0, bassHist: new Float32Array(96), hudOn: QS.get('hud') === '1',
   demoStart: 0, demoOffset: 0, fpsEMA: 60,
 };
 const audio = { el: null, ctx: null, src: null, analyser: null, dest: null, freq: null, url: null };
@@ -1304,12 +1346,12 @@ function cameraFor(i, t, lt) {
       break;
     }
     case 1: {
-      let a = 0.55 * Math.sin(lt * 0.42) + lt * 0.12, d = 2.6, y = 0.2;
-      const pull = easeOutCubic(sstep(4.08, 4.95, lt));
-      d = lerp(d, 5.0, pull); y = lerp(y, 0.05, pull);
-      const front = easeInOut(sstep(4.6, 5.3, lt));
-      a = lerp(a, 0, front); d = lerp(d, 3.15, easeInOut(sstep(5.05, 5.75, lt)));
-      c.pos = [Math.sin(a) * d, y, Math.cos(a) * d]; c.tgt = [0, 0, 0]; c.fov = 44;
+      // orbit the astrolabe, then push inside the crystal lattice during the pre-drop silence
+      const push = easeInOut(sstep(4.46, 5.96, lt));
+      const a = lerp(0.35 * Math.sin(lt * 0.35), 0, push), el = lerp(0.18 + 0.08 * Math.sin(lt * 0.5), 0, push);
+      const d = lerp(3.15, 1.85, push);
+      c.pos = [Math.sin(a) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(a) * Math.cos(el) * d]; c.tgt = [0, 0, 0];
+      c.fov = lerp(46, 64, push); c.roll = 0.12 * push * Math.sin(lt * 2.0);
       break;
     }
     case 2: {
@@ -1326,39 +1368,36 @@ function cameraFor(i, t, lt) {
       break;
     }
     case 3: {
-      const views = [[0.577, 0.577, 0.577], [0.82, 0.25, 0.51], [0, 0, 1], [-0.4, 0.62, 0.67]];
-      const seg = Math.floor(lt / 3.75), k = lt - seg * 3.75;
-      const a = views[seg % 4], b = views[(seg + 3) % 4];
-      const w = easeInOut(sstep(0, 0.38, k));
-      let dir = v3.norm(v3.lerp(b, a, w));
-      const sp = seg % 2 === 0 ? 0.035 : 0.11;
-      const ang = k * sp;
-      dir = v3.norm([dir[0] * Math.cos(ang) + dir[2] * Math.sin(ang), dir[1], -dir[0] * Math.sin(ang) + dir[2] * Math.cos(ang)]);
-      c.pos = v3.scale(dir, 8.0); c.tgt = [0, 0, 0]; c.fov = 22; c.roll = seg % 2 === 0 ? 0 : 0.18 * Math.sin(k * 0.8);
-      c.up = Math.abs(dir[1]) > 0.9 ? [0, 0, 1] : [0, 1, 0];
+      const a = 0.5 + lt * 0.2, el = 0.15 + 0.3 * Math.sin(lt * 0.27), d = 3.4 - 0.4 * sstep(12.96, 15, lt);
+      c.pos = [Math.sin(a) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(a) * Math.cos(el) * d]; c.tgt = [0, 0, 0];
+      c.fov = 50; c.roll = 0.1 * Math.sin(lt * 0.4);
       break;
     }
     case 4: {
       c.pos = [0.25 * Math.sin(t * 0.13), -0.08 + 0.12 * Math.sin(t * 0.21), 2.55]; c.tgt = [0, 0.05, -0.35];
       c.roll = 0.07 * Math.sin(t * 0.17); c.fov = 50;
-      const tw = sstep(12.96, 14.0, lt);
+      const tw = sstep(12.46, 13.3, lt);
       c.pos = v3.lerp(c.pos, [0, 0, 3.05], tw); c.tgt = v3.lerp(c.tgt, [0, 0, 0], tw); c.roll *= 1 - tw;
       break;
     }
     case 5: {
       const a = lt * 0.62 + 0.4, el = 0.42 * Math.sin(lt * 0.33);
-      const d = lerp(2.7, 1.42, easeOutCubic(sstep(0, 1.6, lt))) + 0.12 * Math.sin(lt * 0.5);
+      const d = lerp(3.0, 2.05, easeOutCubic(sstep(0, 1.6, lt))) + 0.12 * Math.sin(lt * 0.5);
       c.pos = [Math.sin(a) * Math.cos(el) * d, Math.sin(el) * d, Math.cos(a) * Math.cos(el) * d]; c.tgt = [0, 0, 0]; c.fov = 74; c.roll = 0.16 * Math.sin(lt * 0.41);
       break;
     }
     case 6: {
+      const rr = (((S.roll7 + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
       c.pos = [0, 0, 1.15]; c.tgt = [0, 0, -2]; c.fov = 82;
-      c.up = [Math.sin(S.roll7), Math.cos(S.roll7), 0];
+      c.up = [Math.sin(rr), Math.cos(rr), 0];
       break;
     }
     default: {
-      c.pos = [0, 0, 1.15]; c.tgt = [0, -0.06 * sstep(0, 8, lt), -2]; c.fov = lerp(82, 74, sstep(0, 12, lt));
-      c.up = [Math.sin(S.roll7), Math.cos(S.roll7), 0];
+      // un-roll the tunnel camera and settle into a frontal view of the falling ribbons
+      const w = easeInOut(sstep(0, 2.5, lt));
+      const rr = ((((S.roll7 + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) - Math.PI) * (1 - w);
+      c.pos = v3.lerp([0, 0, 1.15], [0, 0.1, 2.7], w); c.tgt = v3.lerp([0, 0, -2], [0, 0, 0], w); c.fov = lerp(82, 52, w);
+      c.up = [Math.sin(rr), Math.cos(rr), 0];
     }
   }
   return c;
@@ -1427,7 +1466,6 @@ function simStep(t, dt, st, cam) {
   quad();
   G.ping = 1 - G.ping;
   S.prevSimT = t;
-  if (burst > 0) S.flash = 0.09;
 }
 
 function advance(t, dt, live) {
@@ -1441,7 +1479,6 @@ function advance(t, dt, live) {
   if (t >= ACTS[6].t0 && t < ACTS[7].t0) rs = 0.16 + 1.2 * easeInOut(sstep(87.5, 89.4, t));
   else if (t >= ACTS[7].t0) rs = 1.36 * Math.exp(-(t - ACTS[7].t0) * 0.9);
   S.roll7 += rs * dt;
-  S.flash = (S.flash || 0) * Math.exp(-dt * 12);
 }
 
 function renderFrame(t, dt, live) {
@@ -1528,26 +1565,21 @@ function renderFrame(t, dt, live) {
   // HUD (2-D canvas → texture)
   if (S.hudOn) updateHUD(t, st, r);
 
-  // kaleidoscope / singularity / flash choreography
-  let kal = rp.kaleido, folds = rp.folds, kang = 0;
-  if (t >= 28.0 && t < 30.04) { kal = 1; folds = 8; kang = S.hiCount * 0.393; }
-  if (t >= 72.5 && t < 74.5) { kal = Math.max(kal, 0.85); folds = 8; kang = S.hiCount * 0.393; }
-  if (st.i === 6) { kang = S.roll7 * 0.5; }
-  if (st.i === 7) kal = rp.kaleido;
-  let sing = 0;
-  if (t > 13.2 && t < 15.04) sing = sstep(13.2, 14.0, t) * (1 - 0.65 * sstep(14.2, 14.7, t)) + 0.25 * sstep(14.7, 15.04, t);
-  if (t > 58.0 && t < 59.57) sing = 0.45 * sstep(58.2, 58.8, t) * (1 - 0.6 * sstep(58.8, 59.2, t));
-  const cp = mulMat4Vec(proj, mulMat4Vec(L.view, [0, 0, 0, 1]));
-  const singUV = [cp[0] / cp[3] * 0.5 + 0.5, cp[1] / cp[3] * 0.5 + 0.5];
-  const caAmt = rp.ca + rp.caKick * S.kickAmp * Math.exp(-S.kickAge * 6) + (S.flash || 0) * 0.02;
+  // kaleidoscope on the snare rolls — never darker: +35 % transient lift on every snare hit
+  let kal = rp.kaleido, folds = rp.folds, kang = 0, expo = rp.exposure * EXPOSURE;
+  const roll = SNARE_ROLLS.some(([a, b]) => t >= a && t < b);
+  if (roll && st.i !== 6) { kal = 1; folds = 8; kang = S.hiCount * 0.393; }
+  if (st.i === 6) kang = S.roll7 * 0.5;
+  if (roll) expo *= (st.i === 5 ? 0.9 : 1.08) * (1 + 0.35 * Math.exp(-S.hiAge * 9));
+  const rays = st.i === 1 ? sstep(13.5, 14.3, t) * (0.85 + 0.15 * Math.sin(t * 31)) : 0;
+  const caAmt = rp.ca + rp.caKick * S.kickAmp * Math.exp(-S.kickAge * 6);
   const fade = sstep(0, 0.35, t) * (1 - sstep(101.85, 102.45, t));
   target(RENDER ? r.finalF : null);
   use(G.progs.comp, {
     uScene: scene, uBloom: r.mips[0], uBgTex: r.bg, uHud: r.hud, uAspect: aspect, uTime: t,
-    uKaleido: kal, uFolds: folds, uKAngle: kang, uCA: caAmt, uBloomStr: rp.bloom, uExposure: rp.exposure * EXPOSURE,
-    uGrain: rp.grain, uVignette: rp.vignette, uFade: fade, uFlash: (S.flash || 0) * 0.85, uHudOn: S.hudOn ? 1 : 0,
-    uHudAlpha: sstep(0.2, 1.2, t) * (1 - sstep(100.5, 102.2, t)),
-    uSing: sing, uSingUV: singUV, uSingCol: st.pal[3], uFocusUV: FOCUS_UV, uRes: [r.W, r.H],
+    uKaleido: kal, uFolds: folds, uKAngle: kang, uCA: caAmt, uBloomStr: rp.bloom, uExposure: expo, uGamma: rp.gamma,
+    uGrain: rp.grain, uVignette: rp.vignette, uFade: fade, uRays: rays, uHudOn: S.hudOn ? 1 : 0,
+    uHudAlpha: sstep(0.2, 1.2, t) * (1 - sstep(100.5, 102.2, t)), uFocusUV: FOCUS_UV, uRes: [r.W, r.H],
   });
   quad();
   S.lastState = st;
@@ -1911,8 +1943,7 @@ function bindUI() {
 }
 function toggleClean() {
   S.hudOn = !S.hudOn; HUD.dirtyAll = true;
-  document.body.classList.toggle('clean', !S.hudOn);
-  toast(S.hudOn ? 'HUD ON' : 'CLEAN MODE · 按 H 恢复');
+  toast(S.hudOn ? 'HUD ON · 按 H 隐藏' : 'HUD OFF · 纯画面');
 }
 function toggleFS() { const v = $('view'); if (!document.fullscreenElement) (v.requestFullscreen || v.webkitRequestFullscreen).call(v); else document.exitFullscreen(); }
 
