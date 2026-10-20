@@ -218,32 +218,6 @@ function perspective(fovDeg, aspect, near, far, shiftY) {
 }
 function mulMat4Vec(m, v) { return [m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3], m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3], m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3], m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3]]; }
 
-/* ─────────────────── minimalist stroke font (razor-thin type) ─────────────────── */
-const GLYPHS = (() => {
-  const arc = (cx, cy, r, a0, a1, n) => { const p = []; for (let i = 0; i <= n; i++) { const a = lerp(a0, a1, i / n); p.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); } return p; };
-  const inf = []; for (let i = 0; i <= 96; i++) { const t = i / 96 * Math.PI * 2; const d = 1 + Math.sin(t) ** 2; inf.push([0.5 + 0.5 * Math.cos(t) / d, 0.5 + 0.62 * Math.sin(t) * Math.cos(t) / d]); }
-  return {
-    'W': { w: 0.66, s: [[[0, 1], [0.165, 0], [0.33, 0.74], [0.495, 0], [0.66, 1]]] },
-    'E': { w: 0.46, s: [[[0.46, 1], [0, 1], [0, 0], [0.46, 0]], [[0, 0.52], [0.38, 0.52]]] },
-    'N': { w: 0.52, s: [[[0, 0], [0, 1], [0.52, 0], [0.52, 1]]] },
-    'V': { w: 0.58, s: [[[0, 1], [0.29, 0], [0.58, 1]]] },
-    'R': { w: 0.53, s: [[[0, 0], [0, 1], [0.29, 1], ...arc(0.29, 0.75, 0.25, Math.PI / 2, -Math.PI / 2, 18).slice(1), [0, 0.5]], [[0.24, 0.5], [0.53, 0]]] },
-    '/': { w: 0.34, s: [[[0, -0.06], [0.34, 1.06]]] },
-    '∞': { w: 1.0, s: [inf] },
-    ' ': { w: 0.36, s: [] },
-  };
-})();
-function layoutText(str, height, tracking) {
-  const segs = []; let x = 0; const chars = [...str];
-  chars.forEach((ch, i) => {
-    const g = GLYPHS[ch] || GLYPHS[' '];
-    for (const poly of g.s) for (let k = 0; k < poly.length - 1; k++) segs.push([[x + poly[k][0], poly[k][1]], [x + poly[k + 1][0], poly[k + 1][1]]]);
-    x += g.w + (i < chars.length - 1 && ch !== ' ' ? tracking : 0);
-  });
-  const w = x;
-  return { segs: segs.map(([a, b]) => [[(a[0] - w / 2) * height, (a[1] - 0.5) * height], [(b[0] - w / 2) * height, (b[1] - 0.5) * height]]), width: w * height };
-}
-
 /* ════════════════════════════════ GLSL ════════════════════════════════ */
 const GLSL_COMMON = `
 #define PI 3.14159265359
@@ -328,7 +302,7 @@ const FS_SIM = (mode) => `#version 300 es
 precision highp float;
 precision highp int;
 precision highp sampler2D;
-uniform sampler2D uPos, uVel, uAux, uSeed, uText, uLorenz;
+uniform sampler2D uPos, uVel, uAux, uSeed, uLorenz;
 uniform float uTime, uDt, uLocal, uEnter, uSim;
 uniform float uBass, uMid, uHigh;
 uniform float uKickAge, uKickAmp, uKickEvent;
@@ -381,6 +355,12 @@ vec3 tesseract(vec4 S, vec3 R, float t){
   }
   q = rot4(q, t*0.19, t*0.43, t*0.31, t*0.17);
   return q.xyz * (1.0/(2.9-q.w));
+}
+// thin event-horizon ring the collapsed grains expand into just before each drop
+vec3 haloRing(vec4 S, vec3 R, float k){
+  float a = S.x*TAU;
+  float r = mix(0.025, 0.36, k)*(1.0 + 0.02*(R.y - 0.5));
+  return vec3(cos(a)*r, sin(a)*r, (R.z - 0.5)*0.012);
 }
 vec3 projGyroid(vec3 w, float off){
   vec3 q = w*(TAU/GP);
@@ -446,9 +426,9 @@ void main(){
   }
 #elif MODE == 1
   {
-    /* ── ACT II · reversed gravity → fractal Klein hourglass → singularity → type ── */
+    /* ── ACT II · reversed gravity → fractal Klein hourglass → singularity → event-horizon ring ── */
     float lt = uLocal;
-    float tImp = 4.16, tTxt = 5.11;
+    float tImp = 4.16, tTxt = 5.11;                // 13.20 s collapse · 14.15 s ring
     if (lt < tImp) {
       float lvl = S.w < 0.6 ? 0.0 : (S.w < 0.86 ? 1.0 : 2.0);
       float sc = 0.36*pow(0.52, lvl);
@@ -472,13 +452,11 @@ void main(){
       cmix = 0.6 + 0.4*k;
       bright = mix(0.6, 0.035, smoothstep(0.0, 0.7, k));
     } else {
-      vec4 tx = texelFetch(uText, ij, 0);
-      float k = smoothstep(0.0, 0.42, lt - tTxt);
-      vec3 T = mix(sphereDir(R.xy)*0.02, tx.xyz, k);
-      T += curl(tx.xyz*9.0 + uTime*0.6)*0.0012;
+      float k = smoothstep(0.0, 0.85, lt - tTxt);
+      vec3 T = haloRing(S, R, k);
       acc += spring(p, v, T, 260.0, 0.9);
       drag = 0.3;
-      cmix = 0.55 + 0.45*tx.w;
+      cmix = 0.75 + 0.25*R.x;
       bright = mix(0.035, 0.32, k);
     }
   }
@@ -594,8 +572,7 @@ void main(){
       T = vec3(cos(a)*r, sin(a)*r, T.z*(1.0 - 0.85*kv));
     }
     float kt = smoothstep(13.76, 14.25, lt);
-    vec4 tx = texelFetch(uText, ij, 0);
-    T = mix(T, tx.xyz, kt);
+    T = mix(T, haloRing(S, R, smoothstep(13.76, 14.5, lt)), kt);
     acc += spring(p, v, T, mix(9.0, 90.0, max(kv*0.5, kt)), 0.75);
     acc += curl(p*2.2 + t*0.1)*0.1*(1.0-kt);
     drag = 0.25;
@@ -605,7 +582,7 @@ void main(){
     float spec = pow(max(dot(reflect(-Ld, nn), Vd), 0.0), 22.0);
     float kc = smoothstep(13.1, 13.7, lt);                     // grains pile into the vortex eye: keep the energy constant
     bright = mix(mix(0.4 + 0.8*(1.0-ndv) + 2.2*spec + rip*1.2, 0.008, kc), 0.075, kt);
-    cmix = mix(clamp(0.08 + 0.9*(1.0-ndv)*(1.0-ndv) + 0.1*sin(Y*2.0+t), 0.0, 1.0), 0.7 + 0.3*tx.w, kt);
+    cmix = mix(clamp(0.08 + 0.9*(1.0-ndv)*(1.0-ndv) + 0.1*sin(Y*2.0+t), 0.0, 1.0), 0.75 + 0.25*R.x, kt);
     size = mix(1.0, 0.9, kt);
   }
 #elif MODE == 5
@@ -1098,26 +1075,6 @@ function buildPrograms() {
   emptyVAO = gl.createVertexArray();
 }
 
-function buildTextTargets(sim, rng) {
-  const L = layoutText('W E   N E V E R', 0.17, 0.08);
-  const lens = L.segs.map(([a, b]) => Math.hypot(b[0] - a[0], b[1] - a[1]));
-  const total = lens.reduce((s, x) => s + x, 0);
-  const cum = []; let acc = 0; for (const l of lens) { acc += l; cum.push(acc / total); }
-  const n = sim * sim, data = new Float32Array(n * 4);
-  for (let i = 0; i < n; i++) {
-    const u = rng(); let k = 0; while (k < cum.length - 1 && cum[k] < u) k++;
-    const [a, b] = L.segs[k]; const s = rng();
-    const dx = b[0] - a[0], dy = b[1] - a[1], ln = Math.hypot(dx, dy) || 1;
-    const dust = rng() < 0.07;
-    const g = (rng() + rng() + rng() - 1.5) * (dust ? 0.03 : 0.0028);
-    data[i * 4] = a[0] + dx * s - dy / ln * g;
-    data[i * 4 + 1] = a[1] + dy * s + dx / ln * g;
-    data[i * 4 + 2] = (rng() - 0.5) * (dust ? 0.06 : 0.006);
-    data[i * 4 + 3] = dust ? 0 : 1;
-  }
-  return data;
-}
-
 function buildLorenzTargets(sim) {
   // one long RK4 trajectory on the attractor (σ=10, ρ=28, β=8/3), mapped to world space like the shader
   const n = sim * sim, data = new Float32Array(n * 4), LS = 0.028, h = 0.004;
@@ -1151,7 +1108,6 @@ function buildResources(qName) {
   const res = {
     W, H, SIM, N,
     seed: makeTex(SIM, SIM, F32, N_, CL, seed),
-    text: makeTex(SIM, SIM, F32, N_, CL, buildTextTargets(SIM, mulberry32(77))),
     lorenz: makeTex(SIM, SIM, F32, N_, CL, buildLorenzTargets(SIM)),
     simA, simB, fA: makeFBO(simA), fB: makeFBO(simB),
   };
@@ -1187,7 +1143,7 @@ function buildResources(qName) {
 }
 function destroyResources() {
   const r = G.res; if (!r) return;
-  const texs = [r.seed, r.text, r.lorenz, ...r.simA, ...r.simB, ...r.rd, ...r.scene, r.bg, ...r.mips, r.hud];
+  const texs = [r.seed, r.lorenz, ...r.simA, ...r.simB, ...r.rd, ...r.scene, r.bg, ...r.mips, r.hud];
   texs.forEach((t) => gl.deleteTexture(t.tex));
   if (r.final) { gl.deleteTexture(r.final.tex); gl.deleteTexture(r.yuv.tex); gl.deleteFramebuffer(r.finalF.fbo); gl.deleteFramebuffer(r.yuvF.fbo); }
   [r.fA, r.fB, ...r.rdF, ...r.sceneF, r.bgF, ...r.mipF].forEach((f) => gl.deleteFramebuffer(f.fbo));
@@ -1463,7 +1419,7 @@ function simStep(t, dt, st, cam) {
   const hiEv = eventsBetween(S.an.highs, S.prevSimT, t) > 0 ? 1 : 0;
   target(dst);
   use(G.progs.sim[mode], {
-    uPos: src[0], uVel: src[1], uAux: src[2], uSeed: r.seed, uText: r.text, uLorenz: r.lorenz,
+    uPos: src[0], uVel: src[1], uAux: src[2], uSeed: r.seed, uLorenz: r.lorenz,
     uTime: t, uDt: dt, uLocal: st.lt, uEnter: enter, uSim: r.SIM,
     uBass: S.bass, uMid: S.mid, uHigh: S.high, uKickAge: S.kickAge, uKickAmp: S.kickAmp, uKickEvent: kickEv,
     uHiAge: S.hiAge, uHiEvent: hiEv, uHiCount: S.hiCount, uRipple: S.ripple, uBurst: burst, uCamPos: cam.pos, uTunnelZ: S.tunnelZ,
@@ -1656,15 +1612,8 @@ function hudLayout(W, H) {
   HUD.regions = [
     mk('header', m + 2, m + 2, W - 2 * m - 4, 140 * s),
     mk('telemetry', m + 2, H * 0.618 + 20 * s, 470 * s, 236 * s),
-    mk('title', fx - 330 * s, fy - 44 * s, 660 * s, 88 * s),
-    mk('sub', fx - 210 * s, fy + 440 * s, 420 * s, 60 * s),
+    mk('reticle', fx - 20 * s, fy - 20 * s, 40 * s, 40 * s),
   ];
-}
-function strokeText(c, str, cx, cy, h, tracking) {
-  const L = layoutText(str, h, tracking);
-  c.beginPath();
-  for (const [a, b] of L.segs) { c.moveTo(cx + a[0], cy - a[1]); c.lineTo(cx + b[0], cy - b[1]); }
-  c.stroke();
 }
 function hudStatic(c) {
   const { s, m, W, H } = HUD, cl = 34 * s;
@@ -1727,23 +1676,13 @@ function hudTelemetry(c, t, st, r) {
   const dbfs = 20 * Math.log10(Math.max(1e-6, S.bass * (S.an.ref.bass || 1)));
   c.fillText(`SUB 20–120Hz ${dbfs.toFixed(1)} dBFS · ψ ${st.lt.toFixed(2)}s`, sx, sy + sh + 22 * s);
 }
-function hudTitle(c, t) {
+function hudReticle(c) {
   const { s, fx, fy } = HUD;
-  c.lineWidth = 1 * s; c.lineCap = 'round'; c.lineJoin = 'round';
-  c.strokeStyle = ink(0.12); c.beginPath();
+  c.lineWidth = 1 * s; c.strokeStyle = ink(0.12); c.beginPath();
   c.moveTo(fx - 16 * s, fy); c.lineTo(fx - 6 * s, fy); c.moveTo(fx + 6 * s, fy); c.lineTo(fx + 16 * s, fy);
   c.moveTo(fx, fy - 16 * s); c.lineTo(fx, fy - 6 * s); c.moveTo(fx, fy + 6 * s); c.lineTo(fx, fy + 16 * s); c.stroke();
-  const a = sstep(10.6, 12.2, t) * (1 - sstep(14.1, 14.5, t)) * 0.55;
-  if (a > 0.001) { c.strokeStyle = ink(a); strokeText(c, 'W E   N E V E R', fx, fy, 54 * s, 0.08); }
 }
-function hudSub(c, t) {
-  const { s, fx, fy } = HUD;
-  if (t <= 59.9 || t >= 75.0) return;
-  const a = (0.25 + 0.75 * Math.min(1, Math.exp(-S.kickAge * 4) * S.kickAmp)) * sstep(59.9, 61, t) * (1 - sstep(74.2, 75.0, t)) * 0.75;
-  c.lineWidth = 1 * s; c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = ink(a);
-  strokeText(c, '∞ / / N E V E R', fx, fy + 470 * s, 26 * s, 0.1);
-}
-const HUD_DRAW = { header: hudHeader, telemetry: hudTelemetry, title: hudTitle, sub: hudSub };
+const HUD_DRAW = { header: hudHeader, telemetry: hudTelemetry, reticle: hudReticle };
 function updateHUD(t, st, r) {
   gl.bindTexture(gl.TEXTURE_2D, r.hud.tex);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
