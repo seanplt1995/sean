@@ -142,6 +142,7 @@ const DURATION = 102.48;
 const BPM = 128.0;
 const BEAT = 60 / BPM;
 const BEAT0 = 0.04;                       // measured beat-grid phase of the master
+const EXPOSURE = parseFloat(QS.get('exposure') || '1');   // global exposure trim (also --exposure in render.mjs)
 const LENS_SHIFT = 0.1;                   // optical centre at 45 % from top (Douyin safe zone)
 const FOCUS_UV = [0.5, 0.5 + LENS_SHIFT * 0.5];
 
@@ -180,7 +181,7 @@ const ACTS = [
     bg: '#000000', pal: ['#7F5539', '#B08D57', '#E5E5E5', '#FFFFFF'],
     rp: { decay: 0.6, bloom: 0.9, thresh: 0.5, bright: 0.5, pointScale: 4.4, heat: 0.1, nebula: 0.25, rdBg: 0.1, stars: 0.3, rdMix: 0.0, irid: 0.1, kaleido: 0.0, ca: 0.0012, caKick: 0.002, grain: 0.03, feed: 0.0545, kill: 0.062 } },
 ];
-const RP_DEFAULT = { decay: 0.6, zoom: 1.0, rot: 0.0, bloom: 1.0, thresh: 0.5, exposure: 1.0, ca: 0.002, caKick: 0.006,
+const RP_DEFAULT = { decay: 0.6, zoom: 1.0, rot: 0.0, bloom: 1.0, thresh: 0.5, exposure: 1.4, ca: 0.002, caKick: 0.006,
   kaleido: 0.0, folds: 8, pointScale: 4.2, aperture: 0.0, bright: 0.14, irid: 0.0, rdMix: 0.0, heat: 0.3, nebula: 0.6,
   rdBg: 0.25, gyroidBg: 0.0, stars: 0.2, feed: 0.0545, kill: 0.062, grain: 0.03, vignette: 0.42 };
 for (const a of ACTS) { a.rp = Object.assign({}, RP_DEFAULT, a.rp); a.bgc = hex(a.bg); a.palc = a.pal.map(hex); }
@@ -1587,7 +1588,7 @@ function renderFrame(t, dt, live) {
   target(RENDER ? r.finalF : null);
   use(G.progs.comp, {
     uScene: scene, uBloom: r.mips[0], uBgTex: r.bg, uHud: r.hud, uAspect: aspect, uTime: t,
-    uKaleido: kal, uFolds: folds, uKAngle: kang, uCA: caAmt, uBloomStr: rp.bloom, uExposure: rp.exposure,
+    uKaleido: kal, uFolds: folds, uKAngle: kang, uCA: caAmt, uBloomStr: rp.bloom, uExposure: rp.exposure * EXPOSURE,
     uGrain: rp.grain, uVignette: rp.vignette, uFade: fade, uFlash: (S.flash || 0) * 0.85, uHudOn: S.hudOn ? 1 : 0,
     uHudAlpha: sstep(0.2, 1.2, t) * (1 - sstep(100.5, 102.2, t)),
     uSing: sing, uSingUV: singUV, uSingCol: st.pal[3], uFocusUV: FOCUS_UV, uRes: [r.W, r.H],

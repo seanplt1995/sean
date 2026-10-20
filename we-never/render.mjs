@@ -11,6 +11,7 @@
  *   --fps <n>          frame rate (default 60)
  *   --q <ultra|high|medium|low>  particle / resolution preset (default high)
  *   --hud <0|1>        burn the telemetry HUD into the video (default 1)
+ *   --exposure <x>     global exposure multiplier applied before tone mapping (default 1)
  *   --crf <n>          x264 quality (default 18, lower = better); --maxrate 30M caps the bitrate
  *   --chunk <frames>   video is written in resumable chunks (default 900 = 15 s @60fps); re-running the
  *                      same command after an interruption resumes from the last finished chunk
@@ -46,6 +47,7 @@ const from = Number(arg('from', 0));
 const to = arg('to', null);
 const quality = arg('q', 'high');
 const hud = String(arg('hud', '1'));
+const exposure = String(arg('exposure', '1'));
 const crf = String(arg('crf', 18));
 const maxrate = String(arg('maxrate', '30M'));
 const chunk = Number(arg('chunk', 900));
@@ -141,7 +143,7 @@ const page = await browser.newPage({ viewport: { width: 540, height: 960 } });
 page.on('console', (m) => console.log('  page>', m.text()));
 page.on('pageerror', (e) => { console.error('page error:', e); });
 
-const qs = new URLSearchParams({ render: '1', fps: String(fps), from: String(from + startFrame / fps), to: String(tEnd), q: quality, hud, post: '/frame' });
+const qs = new URLSearchParams({ render: '1', fps: String(fps), from: String(from + startFrame / fps), to: String(tEnd), q: quality, hud, exposure, post: '/frame' });
 if (audioPath) qs.set('audio', '/audio');
 const t0 = Date.now();
 console.log(`rendering ${W}x${H} @${fps}fps  ${from}s → ${tEnd}s  (${total - startFrame} of ${total} frames)  → ${pngDir || out}`);
