@@ -38,6 +38,16 @@ export class Film {
     for (const n of needs) st.layer(n.plate, n);
     this.cur = i;
   }
+  // mean brightness of the painting behind the caption band (text rows y 360–480, x 160–920)
+  bandLuma() {
+    const gl = this.E.gl, w = 760, h = 120;
+    this._band = this._band || new Uint8Array(w * h * 4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.E.fin.fb);
+    gl.readPixels(160, this.E.H - 480, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this._band);
+    let s = 0, n = 0;
+    for (let i = 0; i < this._band.length; i += 16) { s += 0.299 * this._band[i] + 0.587 * this._band[i + 1] + 0.114 * this._band[i + 2]; n++; }
+    return s / n / 255;
+  }
   frame(t) {
     const i = this.shotAt(t), shot = this.shots[i];
     this.enter(i);
@@ -46,7 +56,8 @@ export class Film {
     this.F.t = t; this.F.shot = shot;
     const post = shot.draw(this.F, t) || {};
     E.finish(post);
-    if (this.caps.draw(t)) E.updateTexture(this.capTex, this.caps.canvas);
+    const vis = TL.captions.some((c) => t >= c.start && t <= c.end);
+    if (this.caps.draw(t, vis ? this.bandLuma() : 0.2)) E.updateTexture(this.capTex, this.caps.canvas);
     if (this.caps.key) E.overlay(this.capTex, 1);
     return { shot: shot.id, strokes: E.stats.strokes };
   }

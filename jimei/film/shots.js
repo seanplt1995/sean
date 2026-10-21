@@ -800,7 +800,7 @@ const S19 = {
     const z = lerp(1, 1.15, easeOut(prog(t, 168.4, 169.4)));
     const c = cam(gx, gy - 20 / z, z);
     // a ring of the field is scraped out of the dark around the stroke
-    F.store.drawPlate('fieldSunrise', { cam: c, t, grey: 1, revW: sunRev(), wipeW: [gx, gy, (170.67 - 168.4) / 950, 1], wipe: [168.4, 0.3, 0.12] });
+    F.store.drawPlate('fieldSunrise', { cam: c, t, grey: 1, revW: sunRev(), wipeW: [gx, gy, (170.67 - 168.4) / 560, 1], wipe: [168.4, 0.3, 0.12] });
     const s = S();
     firstStroke(s, gx, gy, { scale: 1 / z });
     // crows in the field crouch, then all lift at 169.2
@@ -818,7 +818,7 @@ const S19 = {
 // ───────────────────────── act seven · 极美 ─────────────────────────
 const SUNRISE_PEOPLE = GATHER.map((g, i) => [g[2], g[3], g[5], i]);
 const S20 = {
-  id: 'S20', b0: 216, b1: 228,
+  id: 'S20', b0: 216, b1: 228, clear: [0, 0, 0],
   layers: () => [{ plate: 'fieldSunrise', D: 2.5, revW: sunRev() }],
   draw(F, t) {
     const E = F.E, [gx, gy] = FIELD.gather, T0 = B(216);
@@ -945,10 +945,8 @@ const S24 = {
 
 export const SHOTS = [S01, S02, S03, S04, S05, S06, S07, S08, S09, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19, S20, S21, S22, S23, S24];
 
-// captions on light paintings (linen, sunrise, golden field) use dark text
-export function captionMode(c, t) {
-  if (t < 12.86) return 'light';
-  if (c.id === 'T25' || c.id === 'T26') return smooth(prog(coda(t), 0.62, 0.42));   // the linen darkens under the words
-  if (t >= 175.4 && t < 199.2) return 'light';
-  return 'dark';
+// captions: warm white with a shadow on dark paint, dark brown on light paint — chosen from the brightness
+// actually behind the band in this frame (sRGB luma; the crossover sits where both colours hold equal contrast)
+export function captionMode(c, t, luma) {
+  return smooth(prog(luma, 0.56, 0.44));
 }

@@ -13,13 +13,20 @@ const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y
 function lines(text, max = 16) {
   if ([...text].length <= max) return [text];
   const ch = [...text], mid = ch.length / 2;
-  // a full-width space is the natural break in a credit line; otherwise the punctuation nearest the middle
+  // a full-width space is the natural break in a credit line
   const sp = ch.indexOf('　');
   if (sp > 0 && sp <= max && ch.length - sp - 1 <= max) return [ch.slice(0, sp).join(''), ch.slice(sp + 1).join('')];
+  // otherwise after punctuation, or at a space before a number or Latin word, nearest the middle; never inside "1890"
   let best = -1, bd = 1e9;
-  ch.forEach((c, i) => { if ('，、：。—'.includes(c) && i < ch.length - 1) { const d = Math.abs(i + 1 - mid); if (d < bd && i + 1 <= max && ch.length - i - 1 <= max) { bd = d; best = i + 1; } } });
-  if (best < 0) best = Math.ceil(mid);
-  return [ch.slice(0, best).join(''), ch.slice(best).join('')];
+  ch.forEach((c, i) => {
+    const cut = '，、：。—'.includes(c) ? i + 1 : c === ' ' ? i : -1;
+    if (cut <= 0 || cut >= ch.length) return;
+    const rest = ch.length - cut - (c === ' ' ? 1 : 0);
+    const d = Math.abs(cut - mid) + (c === ' ' ? 0.5 : 0);
+    if (cut <= max && rest <= max && d < bd) { bd = d; best = i; }
+  });
+  if (best < 0) return [ch.slice(0, Math.ceil(mid)).join(''), ch.slice(Math.ceil(mid)).join('')];
+  return ch[best] === ' ' ? [ch.slice(0, best).join(''), ch.slice(best + 1).join('')] : [ch.slice(0, best + 1).join(''), ch.slice(best + 1).join('')];
 }
 
 export class Captions {
@@ -38,12 +45,13 @@ export class Captions {
     await Promise.all([500, 700].map((w) => document.fonts.load(`${w} 46px ${FONT}`, all)));
   }
   // returns true when the canvas changed
-  draw(t) {
+  draw(t, luma = 0.2) {
     const fade = 0.35;
+    this.luma = luma;
     const vis = this.list.filter((c) => t >= c.start && t <= c.end);
     const states = vis.map((c) => {
       const a = Math.min(1, (t - c.start) / fade, (c.end - t) / fade);
-      let m = this.mode(c, t); if (m === 'dark') m = 1; else if (m === 'light') m = 0;
+      let m = this.mode(c, t, luma); if (m === 'dark') m = 1; else if (m === 'light') m = 0;
       return { c, a: Math.max(0, a), rise: 6 * (1 - Math.min(1, (t - c.start) / fade)), m: Math.round(m * 50) / 50 };
     });
     const key = states.map((s) => `${s.c.id}:${s.a.toFixed(3)}:${s.rise.toFixed(2)}:${s.m}`).join('|');
@@ -59,7 +67,7 @@ export class Captions {
     const light = m < 0.5;
     const mixHex = (a, b, k) => '#' + [0, 2, 4].map((i) => Math.round(parseInt(a.slice(1 + i, 3 + i), 16) * (1 - k) + parseInt(b.slice(1 + i, 3 + i), 16) * k).toString(16).padStart(2, '0')).join('');
     const body = mixHex(DARK, BODY, m);
-    const bg = light ? '#c6b9a3' : '#2b3050';
+    const g = Math.round(Math.max(0, Math.min(1, this.luma)) * 255).toString(16).padStart(2, '0'), bg = '#' + g + g + g;
     const ls = lines(c.text);
     const y0 = this.cy - (ls.length - 1) * lh / 2 + rise;
     x.save();
