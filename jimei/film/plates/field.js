@@ -3,7 +3,7 @@ import { Ref } from '../../engine/plate.js';
 import { KNIFE, DAB, LINE, hex, mixc } from '../../engine/impasto.js';
 import { css, mixh, lerp2, ellipsePts, blob } from './common.js';
 
-export const FIELD = { hz: 900, vp: [760, 885], gather: [720, 1300], tree: [300, 1185] };
+export const FIELD = { hz: 900, vp: [760, 885], gather: [720, 1300], tree: [300, 1182] };
 
 const PALETTES = {
   dusk: {
@@ -59,11 +59,29 @@ export function plateField(variant = 'dusk') {
     ref.fill(q, { lin: [0, hz, 0, H], stops: [[0, P.rowFar], [0.25, col], [1, mixh(col, P.shadow, 0.25)]] },
       { dir: (x, y) => Math.atan2(vp[1] - y, vp[0] - x), maxR: (x, y) => 5 + 34 * Math.max(0, Math.min(1, (y - hz) / 1300)), group: 'field', edgeFollow: 0.2, hgt: 0.9 });
   }
-  // the ridge path on the left, and its grassy edges
-  const rA = [[-60, H], [300, H], lerp2([300, H], [400, hz], 0.99), lerp2([-60, H], [400, hz], 0.99)];
-  ref.fill(rA, { lin: [0, hz, 0, H], stops: [[0, P.ridgeLit], [1, P.ridge]] }, { dir: (x, y) => Math.atan2(hz - y, 400 - x), maxR: (x, y) => 5 + 26 * Math.max(0, Math.min(1, (y - hz) / 1300)), group: 'ridge' });
-  ref.line([[300, H], lerp2([300, H], [400, hz], 0.99)], 10, P.grass, { type: KNIFE, step: 16, run: 0.5 });
-  ref.line([[-60, H], lerp2([-60, H], [400, hz], 0.99)], 10, P.grass, { type: KNIFE, step: 16, run: 0.5 });
+  // a path between the rows, toward the same vanishing point, coming in from the bottom-left;
+  // a cross-ridge (a horizontal field boundary) branches off it to the left and carries the lone tree
+  const depthR = (y) => 5 + 26 * Math.max(0, Math.min(1, (y - hz) / 1300));
+  const pathL = [-300, H], pathR = [-20, H];
+  const pq = [pathL, pathR, lerp2(pathR, vp, 0.985), lerp2(pathL, vp, 0.985)];
+  ref.fill(pq, { lin: [0, hz, 0, H], stops: [[0, P.ridgeLit], [1, P.ridge]] }, { dir: (x, y) => Math.atan2(vp[1] - y, vp[0] - x), maxR: depthR, group: 'path', edgeFollow: 0.9 });
+  const crossY = FIELD.tree[1], cw = 22, crossX1 = lerp2(pathL, vp, (H - crossY) / (H - vp[1]))[0] + 10;
+  ref.fill([[0, crossY - cw / 2], [crossX1, crossY - cw / 2], [crossX1 + 8, crossY + cw / 2], [0, crossY + cw / 2]], { lin: [0, crossY - cw, 0, crossY + cw], stops: [[0, P.ridgeLit], [1, P.ridge]] }, { dir: 0, maxR: 6, group: 'cross' });
+  // grass tufts along the edges (short blades, smaller with distance)
+  const tufts = (a, b, n, seed) => {
+    for (let k = 0; k < n; k++) {
+      const u = Math.pow(k / n, 1.8), p = lerp2(a, b, u), d = Math.max(0, (p[1] - hz) / (H - hz));
+      if (p[0] < -30 || p[0] > W + 30 || d < 0.03) continue;
+      const sz = 4 + 30 * d;
+      ref.extra.push({ x: p[0] + Math.sin(k * 7.1 + seed) * sz * 0.4, y: p[1], ang: -Math.PI / 2 + Math.sin(k * 3.3 + seed) * 0.5, len: sz * 1.7, wid: sz * 0.45, c: k % 3 ? hex(P.grass) : mixc(hex(P.grass), hex(P.ridgeLit), 0.4), type: KNIFE, taper: 0.7, seed: seed * 100 + k, hgt: 0.9, run: 0.2 });
+    }
+  };
+  tufts(pathL, lerp2(pathL, vp, 0.95), 70, 1);
+  tufts(pathR, lerp2(pathR, vp, 0.95), 70, 2);
+  for (let k = 0; k < 16; k++) {
+    const x = 10 + k * (crossX1 - 20) / 16, sz = 5 + 3 * Math.sin(k);
+    ref.extra.push({ x, y: crossY - cw / 2 + 2, ang: -Math.PI / 2 + Math.sin(k * 2.3) * 0.5, len: sz * 1.8, wid: sz * 0.45, c: hex(P.grass), type: KNIFE, taper: 0.7, seed: 4900 + k, hgt: 0.8, run: 0.2 });
+  }
   // the lone tree on the ridge
   const [tx, ty] = FIELD.tree;
   ref.fill([[tx - 14, ty], [tx - 8, ty - 190], [tx - 60, ty - 270], [tx - 48, ty - 278], [tx - 2, ty - 214], [tx + 6, ty - 300], [tx + 18, ty - 300], [tx + 14, ty - 200], [tx + 64, ty - 250], [tx + 72, ty - 240], [tx + 18, ty - 170], [tx + 14, ty]], P.trunk, { dir: Math.PI / 2, maxR: 6, edge: 2, run: 0, group: 'trunk' });

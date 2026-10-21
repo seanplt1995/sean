@@ -9,7 +9,7 @@ const b = await browser();
 const page = await b.newPage();
 page.on('console', (m) => console.log('page>', m.text()));
 page.on('pageerror', (e) => console.log('pageerror', e));
-await page.goto(`http://127.0.0.1:${port}/tools/bench.html`);
+await page.goto(`http://127.0.0.1:${port}/tools/${process.argv[3] || "bench"}.html${process.argv[4] ? "?" + process.argv[4] : ""}`);
 await page.waitForFunction(() => window.__R, null, { timeout: 0 });
 console.log(await page.evaluate(() => window.__R));
 await b.close(); server.close();

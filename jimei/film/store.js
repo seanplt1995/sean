@@ -2,6 +2,8 @@
 // drawPlate() picks the sharpest cached layer that covers the view, or paints live when none does.
 import { paintRef } from '../engine/plate.js';
 
+export const RSCALE = 0.65;
+
 export class Store {
   constructor(E, defs) {
     this.E = E; this.defs = defs;
@@ -16,7 +18,10 @@ export class Store {
     const p = { name, info, w: info.w, h: info.h, ox, oy, rect: [ox, oy, ox + info.w, oy + info.h], M: [1, 0, 0, 1, ox, oy] };
     const t0 = performance.now();
     if (!info.noStrokes) {
-      p.strokes = paintRef(info.ref, Object.assign({ R: info.R || [56, 34, 20, 12, 7, 4], seed: d.seed || 1 }, d.paint || {}));
+      // finer paint: every plate's strokes at about two-thirds of their drawn radii (the title keeps its own)
+      const R0 = (d.paint && d.paint.R) || info.R || [56, 34, 20, 12, 7, 4];
+      const R = d.paint && d.paint.R ? R0 : R0.map((r) => Math.max(2.6, r * RSCALE));
+      p.strokes = paintRef(info.ref, Object.assign({ seed: d.seed || 1 }, d.paint || {}, { R }));
       p.batch = this.E.batch(p.strokes.data());
     }
     p.tex = this.E.texture(info.ref.under(1.5));

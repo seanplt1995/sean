@@ -137,7 +137,7 @@ void main(){
   float appAmt = clamp((uT.x - uT.w - keyA)/max(uAppDur,1e-4), 0.0, 1.0);
   float pad = 2.0/(uCam.z*uSS);
   float skew = a3.w;
-  float hw = W + abs(a1.w)*L + pad;
+  float hw = W*max(1.0, 1.0 - a1.z) + abs(a1.w)*L + pad;
   vec2 lp;
   if (a1.y == 2.0) lp = aQ*vec2(L*1.15 + pad, W*1.15 + pad);
   else if (a1.y == 3.0) lp = aQ*vec2(L + pad, W + pad);

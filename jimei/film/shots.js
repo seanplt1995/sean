@@ -301,9 +301,7 @@ const S07 = {
     const sh = [ux - hS * 0.1, uy - hS * 0.78];
     const top = [lerp(ux + hS * 0.12, (tx + ux) / 2 + hS * 0.04, lift), lerp(uy - hS * 0.45, Math.min(ty - hT, uy - hS) - hS * 0.08, lift)];
     const handT = [lerp(top[0], top[0] + hS * 0.02, lift), top[1] + hS * lerp(0.35, 0.42, lift)];
-    const dx = handT[0] - sh[0], dy = handT[1] - sh[1], reach = Math.hypot(dx, dy);
-    const a1 = Math.atan2(dx, dy), bend = Math.acos(Math.min(1, reach / (hS * 0.37))) * 1.2;
-    figure(s, { x: ux, y: uy, h: hS, facing: 'front', walk: t < B(75.5) ? beat * 0.5 : null, stride: 0.25, coat: hex('#3c3f4a'), seed: 2, collar: false, light: 1, hem: -0.4 * wind, armL: [a1 + bend * 0.5, -bend] });
+    figure(s, { x: ux, y: uy, h: hS, facing: 'front', walk: t < B(75.5) ? beat * 0.5 : null, stride: 0.25, coat: hex('#3c3f4a'), seed: 2, collar: false, light: 1, hem: -0.4 * wind, armL: ik([ux - 0.112 * hS, uy - 0.841 * hS], handT, hS, -1) });
     umbrella(s, { x: top[0], y: top[1], r: hS * 0.4, open, tilt: lerp(0.5, -0.12, lift) - 0.08 * Math.sin(t * 2.3), c: PAL.umbrella, c2: PAL.umbrella2, seed: 1, gmul: 0 });
     rain(s, { rect: [c.x - 400, c.y - 720, c.x + 400, c.y + 720], t, n: 260, angle: 1.32, speed: 1700, len: 52, wid: 2.2, c: hex('#b9c4d8'), alpha: 0.5 });
     E.drawNow(s, { cam: c, t });
@@ -423,24 +421,25 @@ const S09 = {
 
 const S10 = {
   id: 'S10', b0: 104, b1: 120,
-  layers: () => [{ plate: 'close', D: 2.5 }, { plate: 'close', D: 4.6, sub: [700, 1700, 1440, 2560] }, { plate: 'close', D: 4.6, sub: [20, 700, 620, 2500] }],
+  layers: () => [{ plate: 'close', D: 2.5 }, { plate: 'close', D: 3.2, sub: [500, 1250, 1440, 2560] }, { plate: 'close', D: 4.6, sub: [20, 700, 620, 2500] }],
   draw(F, t) {
     const E = F.E, s = S();
     let c;
     const gust = smooth(prog(t, B(116), B(119)));
     if (t < B(108)) {
-      // a hand brushes over the ears, right to left
-      c = clampCam(cam(1110, 2250, 2.2), [0, 0, 1440, 2560]);
+      // the traveller wades waist-deep through the wheat, one hand trailing over the ears
+      const p = prog(t, B(104), B(108));
+      c = clampCam(cam(lerp(1010, 880, smooth(p)), 1920, 1.5), [0, 0, 1440, 2560]);
       F.store.drawPlate('close', { cam: c, t, allowSoft: true });
-      const hx = lerp(1320, 940, easeInOut(prog(t, B(104.3), B(107.6)))), hy = 2150;
-      for (let k = 0; k < 26; k++) {
-        const x = 900 + (k % 13) * 36 + (k > 12 ? 18 : 0), y = 2330 + (k > 12 ? 70 : 0) + Math.sin(k * 3.1) * 10;
-        const touch = Math.exp(-Math.pow((x - hx) / 40, 2)) * (y < 2380 ? 1 : 0.5);
-        wheat(s, x, y, 200 + 30 * Math.sin(k), 0.14 * Math.sin(t * 1.7 - x * 0.01) - 0.6 * touch, { seed: 900 + k });
+      const px = lerp(1060, 900, p), py = 2620 - 40 * p, ph = 720 - 30 * p;
+      const f = figure(s, { x: px, y: py, h: ph, facing: 'back', walk: beatAt(t) * 0.5, stride: 0.14, coat: hex('#4a4239'), seed: 1, collar: true, light: 1, belt: true, armR: [0.48, 0.12], armL: [-0.08, 0.18], hem: 0.1 * Math.sin(t * 2) });
+      const hand = f._handR;
+      for (let k = 0; k < 96; k++) {      // a dense stand of ears in front of the walker, bowing where the hand passes
+        const row = k % 4, x = 640 + Math.floor(k / 4) * 34 + row * 9 + Math.sin(k * 2.7) * 9, y = 2420 + row * 46 + Math.sin(k * 3.1) * 10;
+        const len = 175 + 35 * Math.sin(k * 1.3) + row * 14, top = y - len;
+        const touch = Math.exp(-Math.pow((x - hand[0]) / 50, 2)) * Math.exp(-Math.pow((top - hand[1]) / 110, 2));
+        wheat(s, x, y, len, 0.14 * Math.sin(t * 1.7 - x * 0.01) - 0.75 * touch, { seed: 900 + k });
       }
-      s.push({ x: hx + 140, y: hy - 40, ang: -0.35, len: 300, wid: 70, c: hex('#4a3b33'), c2: hex('#5e4a3e'), type: KNIFE, seed: 5201, run: 0, taper: 0.15 });
-      s.push({ x: hx, y: hy + 10, ang: -0.25, len: 70, wid: 46, c: hex('#c49478'), c2: hex('#a87a60'), type: DAB, seed: 5202 });
-      for (let f = 0; f < 3; f++) s.push({ x: hx - 40, y: hy + 22 + f * 12, ang: 3.0, len: 40, wid: 12, c: hex('#b88a6e'), type: KNIFE, taper: 0.4, seed: 5203 + f, run: 0 });
     } else if (t < B(112)) {
       // the tree: a leaf lets go, turns over and falls; the camera follows it down
       const p = prog(t, B(108) + 0.25, B(112));
@@ -454,9 +453,26 @@ const S10 = {
       c = clampCam(lerpCam(cam(CLOSE.leafTo[0] + 40, CLOSE.leafTo[1] - 220, 2.2), cam(720, 1300, 1), p), [0, 0, 1440, 2560]);
       F.store.drawPlate('close', { cam: c, t });
       s.push({ x: CLOSE.leafTo[0], y: CLOSE.leafTo[1], ang: 0.1, len: 46, wid: 16, c: hex('#9A4E2A'), c2: hex('#C08A3E'), type: KNIFE, seed: 5302, run: 0.3, app: 0 });
-      CLOSE.people.forEach(([x, y], i) => {
-        figure(s, { x, y, h: 290, facing: 'back', coat: hex(['#5a3e2e', '#3e4a5a', '#6a4a32', '#4a3a3e', '#3e4638', '#5e4a3a', '#4a3e36'][i]), seed: 70 + i, light: 1, hem: 0.4 * gust * Math.sin(t * 3 + i),
-          armL: i > 0 ? [-1.6, 0.6] : null, armR: i < 6 ? [1.6, 0.6] : null });
+      // seven people watching the sunset, at ease: hands in pockets, a couple holding hands, a head on a shoulder, a child
+      const G = [
+        { x: 500, y: 1792, h: 300, coat: '#5a3e2e', pockets: true, sway: 1 },
+        { x: 598, y: 1800, h: 292, coat: '#3e4a5a', sway: -0.6, hold: 2, side: 1 },
+        { x: 668, y: 1796, h: 274, coat: '#6a4a32', sway: 0.6, hold: 1, side: -1, scarf: hex('#9C3B2A') },
+        { x: 792, y: 1804, h: 290, coat: '#4a3a3e', sway: 1, tiltHead: 1, pockets: true },
+        { x: 858, y: 1798, h: 304, coat: '#3e4638', sway: -0.4, armL: [-0.08, 0.2], armR: [0.1, 0.15] },
+        { x: 942, y: 1806, h: 188, coat: '#8a5a3a', child: true, hold: 6, side: 1 },
+        { x: 1012, y: 1794, h: 306, coat: '#5e4a3a', sway: -1, hold: 5, side: -1 },
+      ];
+      const shoulderOf = (q, sd) => [q.x + sd * 0.112 * q.h * (q.child ? 0.9 : 1), q.y - (q.child ? 0.741 : 0.841) * q.h];
+      G.forEach((q, i) => {
+        const f = { x: q.x, y: q.y, h: q.h, facing: 'back', coat: hex(q.coat), seed: 70 + i, light: 1, hem: 0.35 * gust * Math.sin(t * 3 + i), sway: q.sway, pockets: q.pockets, child: q.child, tiltHead: q.tiltHead, scarf: q.scarf, armL: q.armL, armR: q.armR };
+        if (q.hold != null) {
+          const o2 = G[q.hold], lowH = Math.min(q.child ? q.h : 1e9, o2.child ? o2.h : 1e9);
+          const meetY = lowH < 1e8 ? Math.max(q.y, o2.y) - 0.72 * lowH : (q.y + o2.y) / 2 - 0.42 * Math.min(q.h, o2.h);
+          const target = [(q.x + o2.x) / 2, meetY], sh = shoulderOf(q, q.side);
+          if (q.side > 0) f.armR = ik(sh, target, q.h, 1); else f.armL = ik(sh, target, q.h, -1);
+        }
+        figure(s, f);
       });
       for (let k = 0; k < 4; k++) crow(s, { x: 560 + k * 150, y: 1850 + (k % 2) * 14, s: 28, pose: 'perch', dir: k % 2 ? 1 : -1, head: 0.2 * (k % 2), seed: 40 + k });
       for (let k = 0; k < 40; k++) {
@@ -540,6 +556,24 @@ function bez(a, c, b, n = 24) { const o = []; for (let i = 0; i <= n; i++) { con
 const GOLD = (k) => mixc(PAL.gold, PAL.window, 0.5 + 0.5 * Math.sin(k * 9));
 const TRAIL = (k) => mixc(hex('#fff1c2'), PAL.gold, 0.35 + 0.35 * Math.sin(k * 11));
 
+// arm angles that put the hand on a target: [upper-arm angle, elbow bend toward the body] for figure()
+function ik(sh, target, h, side) {
+  const L1 = 0.19 * h, L2 = 0.18 * h, dx = target[0] - sh[0], dy = target[1] - sh[1];
+  const r = Math.min(Math.hypot(dx, dy), (L1 + L2) * 0.999), th = Math.atan2(dx, dy);
+  const d = Math.acos(Math.max(-1, Math.min(1, (r * r - L1 * L1 - L2 * L2) / (2 * L1 * L2))));
+  const a = Math.atan2(L2 * Math.sin(d), L1 + L2 * Math.cos(d));
+  return [th + side * a, d];
+}
+// a crow with a spark of the lantern's light in its beak, and the faint wake of that spark
+function emberCrow(out, x, y, s, dir, t, seed, o = {}) {
+  crow(out, { x, y, s, pose: 'fly', flap: t * 2.6 + seed * 0.37, dir, seed, tilt: o.tilt || 0, gmul: 1 });
+  const bx = x + dir * s * 0.74, by = y - s * 0.03, e = s * 0.38;
+  out.push({ x: bx, y: by, ang: 0, len: e * 5, wid: e * 5, c: PAL.window, type: DAB, alpha: 0.25, seed: 9900 + seed, gmul: 0, hgt: 0.05 });
+  out.push({ x: bx, y: by, ang: 0, len: e, wid: e, c: hex('#fff1c2'), c2: PAL.first2, type: DAB, seed: 9901 + seed, gmul: 0, hgt: 1 });
+  (o.wake || []).forEach(([wx, wy], k) => out.push({ x: wx, y: wy, ang: 0, len: e * (0.8 - k * 0.12), wid: e * (0.8 - k * 0.12), c: mixc(hex('#fff1c2'), PAL.window, 0.5), type: DAB, alpha: 0.55 * (1 - k / 6), seed: 9910 + seed * 7 + k, gmul: 0, hgt: 0.4 }));
+}
+const sillOf = (w) => [(w.q[2][0] + w.q[3][0]) / 2, (w.q[2][1] + w.q[3][1]) / 2 + 4];
+
 function travellerWithLantern(out, x, y, h, t, o = {}) {
   const f = figure(out, { x, y, h, facing: o.facing || 'front', walk: o.walk, stride: 0.3, coat: hex('#4a4239'), seed: 1, collar: true, light: 1, armR: o.armR || [0.45, 0.35], gmul: 1, look: o.look });
   const hd = f._handR;
@@ -557,21 +591,22 @@ const S12 = {
     const s = S(), g = S();
     const tz = 30 - 1.4 * (t - B(140)), [tx, ty] = ground(0.2, tz);
     const lamp = travellerWithLantern(g, tx, ty, hAt(tz), t, { walk: beatAt(t) * 0.5 });
+    // a crow dips to the lantern, takes a spark, carries it to a window; the window lights as it lands
+    const lampAt = (tt) => { const z = 30 - 1.4 * (tt - B(140)), [x, y] = ground(0.2, z); return travellerWithLantern(new Strokes(64), x, y, hAt(z), tt, { walk: beatAt(tt) * 0.5 }); };
     const wins = WIN_PICK(st);
     wins.forEach((w, i) => {
-      const tl = B(144 + 2 * i), t0 = tl - 1.3;
+      const tl = B(144 + 2 * i), t0 = tl - 2.0;
       litWindow(s, w, tl, t, { seed: i, reflect: w.row > 0.4 ? lerp(2200, 2260, w.c[0] / 1440) - (lerp(2200, 2260, w.c[0] / 1440) - HZ) * w.d + 30 : 0 });
-      if (t < t0 || t > tl + 2.2) return;
-      const ctrl = [(lamp[0] + w.c[0]) / 2 + w.side * 60, Math.min(lamp[1], w.c[1]) - 260];
-      const path = bez(lamp, ctrl, w.c, 30);
-      const p = clamp01((t - t0) / 1.3), tail = clamp01((t - tl - 0.4) / 1.6);
-      ribbon(s, path, { prog: p, tail, c: GOLD, wid: 20, step: 22, seed: i * 31 });
-      for (let k = 0; k < 2; k++) {
-        const u = clamp01(p - 0.1 - k * 0.12);
-        if (u <= 0 || tail > 0.6) continue;
-        const idx = Math.floor(u * (path.length - 1)), a = path[idx], b = path[Math.min(path.length - 1, idx + 1)];
-        crow(s, { x: a[0], y: a[1] - 18, s: 26, pose: 'fly', flap: t * 2.6 + k, dir: b[0] >= a[0] ? 1 : -1, seed: 80 + i * 2 + k, tilt: Math.atan2(b[1] - a[1], Math.abs(b[0] - a[0]) + 1e-3) * 0.6, gmul: 1 });
-      }
+      if (t < t0) return;
+      const sill = sillOf(w), ls0 = lampAt(t0 + 0.5), size = 44 * (1 - 0.5 * w.d);
+      if (t >= tl - 0.05) { crow(s, { x: sill[0], y: sill[1], s: size, pose: 'perch', dir: -w.side, head: Math.sin(t * 1.5 + i) > 0.6 ? 0.3 : 0, seed: 80 + i, gmul: 1 }); return; }
+      const dive = bez([ls0[0] - w.side * 90, ls0[1] - 230], [ls0[0] - w.side * 60, ls0[1] - 40], [ls0[0], ls0[1] - 10], 12);
+      const rise = bez([ls0[0], ls0[1] - 10], [(ls0[0] + sill[0]) / 2 + w.side * 80, Math.min(ls0[1], sill[1]) - 220], sill, 30);
+      const at = (u) => { const path = u < 0.25 ? dive : rise, v = u < 0.25 ? u / 0.25 : (u - 0.25) / 0.75, f = v * (path.length - 1), j = Math.min(path.length - 2, Math.floor(f)), r = f - j; return [lerp(path[j][0], path[j + 1][0], r), lerp(path[j][1], path[j + 1][1], r)]; };
+      const u = smooth((t - t0) / (tl - t0)), [x, y] = at(u), [nx, ny] = at(Math.min(1, u + 0.02));
+      const sz = lerp(20, size, u), dir = nx >= x ? 1 : -1;
+      if (u < 0.25) crow(s, { x, y, s: sz, pose: 'fly', flap: t * 2.6 + i, dir, seed: 80 + i, tilt: 0.3, gmul: 1 });
+      else emberCrow(s, x, y, sz, dir, t, 80 + i, { tilt: Math.atan2(ny - y, Math.abs(nx - x) + 1e-3) * 0.5, wake: [1, 2, 3, 4, 5].map((k) => at(Math.max(0.25, u - 0.03 * k))).map(([wx, wy]) => [wx + dir * sz * 0.74, wy]) });
     });
     E.drawNow(g, { cam: c, t, grey: 1 });
     E.drawNow(s, { cam: c, t, grey: 1 });
@@ -593,23 +628,30 @@ const S13 = {
       if (hash1(i * 5.3) < 0.5) return;
       litWindow(s, { q: [[wx - ww / 2, wy - wh / 2], [wx + ww / 2, wy - wh / 2], [wx + ww / 2, wy + wh / 2], [wx - ww / 2, wy + wh / 2]], c: [wx, wy] }, -1, t, { seed: 20 + i });
     });
-    // someone else sits head-down where the traveller sat
+    // someone else sits head-down on the bench
     const seat = bi.seatY, feet = seat + 150;
-    figure(g, { x: 660, y: feet, h: 460, facing: 'front', sit: 0.32, coat: hex('#3e4652'), seed: 9, collar: true, look: -1, light: 1, gmul: 1, armL: [0.12, 0.6], armR: [-0.12, 0.6] });
-    // the traveller comes in from the right, lifts the old red umbrella (b159) and opens it over them (b160)
+    figure(g, { x: 840, y: feet, h: 460, facing: 'front', sit: 0.32, coat: hex('#3e4652'), seed: 9, collar: true, look: -1, light: 1, gmul: 1, armL: [0.12, 0.6], armR: [-0.12, 0.6] });
+    // the traveller comes in from the left and stops beside them
     const arrive = easeOut(prog(t, B(156), B(159)));
-    const tx = lerp(1180, 900, arrive), ty = feet + 40, th = 520;
+    const tx = lerp(260, 640, arrive), ty = feet + 40, th = 520;
+    const shR = [tx + 0.1 * th, ty - 0.78 * th], shL = [tx - 0.1 * th, ty - 0.78 * th];
+    // right hand: lifts the old red umbrella (b159, anticipation) and opens it over the sitter (b160)
     const lift = smooth(prog(t, B(159), B(159.8))), open = t < B(160) ? 0 : spring(t, B(160), 0.3);
-    const top = [lerp(tx - 60, 700, lift), lerp(ty - th * 0.62, ty - th * 1.2, lift)];
-    const sh = [tx - th * 0.1, ty - th * 0.79], hand = [top[0] + 10, top[1] + th * 0.42 * lerp(0.6, 1, lift)];
-    const dx = hand[0] - sh[0], dy = hand[1] - sh[1], bend = Math.acos(Math.min(1, Math.hypot(dx, dy) / (th * 0.37))) * 1.2;
-    // the lantern goes onto the bench (b162 → b163)
-    const put = smooth(prog(t, B(162), B(163.2)));
-    const tr = figure(g, { x: tx, y: ty, h: th, facing: 'front', walk: arrive < 1 ? beatAt(t) * 0.5 : null, stride: 0.28, coat: hex('#4a4239'), seed: 1, collar: true, light: -1, gmul: 1, armL: [Math.atan2(dx, dy) + bend * 0.5, -bend], armR: [lerp(0.4, 0.9, put), lerp(0.35, 0.9, put)], look: 0.2 });
-    const hr = tr._handR;
-    const lp = [lerp(hr[0], 860, put), lerp(hr[1] + th * 0.17, seat - 6, put)];
-    lantern(g, { x: lp[0], y: lp[1], s: th * 0.16, lit: 1, t, gmul: 0, seed: 3, handle: true });
-    umbrella(g, { x: top[0], y: top[1], r: th * 0.42, open, tilt: lerp(0.6, 0.1, lift), c: PAL.umbrella, c2: PAL.umbrella2, seed: 2, gmul: 0 });
+    const tilt = lerp(0.55, -0.08, lift);
+    const top = [lerp(tx + 0.22 * th, 815, lift), lerp(ty - 0.66 * th, ty - 1.16 * th, lift)];
+    const gripR = [top[0] - Math.sin(tilt) * th * 0.42 * 0.9, top[1] + Math.cos(tilt) * th * 0.42 * 0.9];
+    // left hand: carries the lantern by its handle, sets it on the seat at b162 → b163.2, lets go
+    const lsz = th * 0.16, spot = [505, seat - 4];
+    const hang = [shL[0] - 0.01 * th, shL[1] + 0.36 * th];
+    const put = smooth(prog(t, B(162), B(163.2))), back = smooth(prog(t, B(163.4), B(164.4)));
+    const onSeat = t >= B(163.2);
+    const handle = [spot[0], spot[1] - lsz * 1.12];
+    const gripL = onSeat ? [lerp(handle[0], hang[0], back), lerp(handle[1], hang[1], back)] : [lerp(hang[0], handle[0], put), lerp(hang[1], handle[1], put)];
+    if (onSeat) lantern(g, { x: spot[0], y: spot[1], s: lsz, lit: 1, t, gmul: 0, seed: 3, handle: true });
+    figure(g, { x: tx, y: ty, h: th, facing: 'front', walk: arrive < 1 ? beatAt(t) * 0.5 : null, stride: 0.28, coat: hex('#4a4239'), seed: 1, collar: true, light: -1, gmul: 1, armR: ik(shR, gripR, th, 1), armL: ik(shL, gripL, th, -1), look: 0.2, lean: 0 });
+    if (!onSeat) lantern(g, { x: gripL[0], y: gripL[1] + lsz * 1.12, s: lsz, lit: 1, t, gmul: 0, seed: 3, handle: true });
+    umbrella(g, { x: top[0], y: top[1], r: th * 0.42, open, tilt, c: PAL.umbrella, c2: PAL.umbrella2, seed: 2, gmul: 0 });
+    const lp = onSeat ? spot : [gripL[0], gripL[1] + lsz * 1.12];
     rain(s, { rect: [c.x - 700, c.y - 1100, c.x + 700, c.y + 1100], t, n: 300, angle: 1.4, speed: 1800, len: 58, wid: 2.4, c: hex('#b9c4d8'), alpha: 0.45 });
     E.drawNow(s, { cam: c, t, grey: 1 });
     E.drawNow(g, { cam: c, t, grey: 1 });
@@ -631,13 +673,18 @@ const S14 = {
     // every window on the street lights up, a batch a beat (b172…b175)
     const picked = new Set(WIN_PICK(st));
     st.windows.forEach((w, i) => litWindow(s, w, picked.has(w) ? -1 : B(172 + (i % 4)), t, { seed: 40 + i }));
-    // the ribbon rises into the sky; the crows gather into a spiral and climb with it
-    const rib = [];
-    for (let i = 0; i <= 40; i++) { const u = i / 40; rib.push([720 + Math.sin(u * 7 + t * 1.5) * 160 * (1 - u * 0.3), 1700 - u * 3600]); }
-    ribbon(s, rib, { prog: clamp01(0.3 + prog(t, B(172), B(177)) * 0.7), c: GOLD, wid: 26, step: 26, seed: 7 });
+    // the crows on the sills lift off and gather into a spiral, climbing with their sparks
+    const sills = WIN_PICK(st).map(sillOf);
+    const spiral = (k, tt) => { const a = tt * 2.2 + k * 0.52, h = 1500 - k * 140 - prog(tt, B(172), B(178)) * 1200; return [720 + Math.cos(a) * (120 + k * 14), h + Math.sin(a) * 40, a]; };
     for (let k = 0; k < 12; k++) {
-      const a = t * 2.2 + k * 0.52, h = 1500 - k * 140 - prog(t, B(172), B(178)) * 1200;
-      crow(s, { x: 720 + Math.cos(a) * (120 + k * 14), y: h + Math.sin(a) * 40, s: 30, pose: 'fly', flap: t * 2.6 + k * 0.3, dir: Math.sin(a) > 0 ? -1 : 1, seed: 100 + k, tilt: -0.3, gmul: 1 });
+      const [sx, sy, a] = spiral(k, t), [px] = spiral(k, t - 0.05);
+      if (k < 6) {
+        const lk = smooth(prog(t, B(172) + k * 0.3, B(172) + k * 0.3 + 1.2)), [cx, cy] = sills[k];
+        if (lk <= 0) { crow(s, { x: cx, y: cy, s: 26, pose: 'perch', dir: k % 2 ? 1 : -1, seed: 80 + k, gmul: 1 }); continue; }
+        emberCrow(s, lerp(cx, sx, lk), lerp(cy, sy, lk), 28, lk < 1 ? (sx > cx ? 1 : -1) : (sx >= px ? 1 : -1), t, 100 + k, { tilt: -0.3 });
+        continue;
+      }
+      emberCrow(s, sx, sy, 28, sx >= px ? 1 : -1, t, 100 + k, { tilt: -0.3, wake: [1, 2, 3].map((j) => { const [wx, wy] = spiral(k, t - j * 0.07); return [wx, wy]; }) });
     }
     E.drawNow(s, { cam: c, t, grey: 1 });
     return Object.assign({}, NIGHT_POST);
@@ -711,7 +758,7 @@ const S15 = {
 // ───────────────────────── act six · 灰与白 ─────────────────────────
 // the traveller close enough to need more paint: folds, seams, hair, a sliver of face
 function heroTraveller(out, t, o) {
-  const f = figure(out, Object.assign({ x: HILL.feet[0], y: HILL.feet[1], h: HILL.h, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, cheek: o.look > 0.2, blades: 5, hands: false, armL: [0.1, 0.25], armR: [-0.1, 0.25] }, o));
+  const f = figure(out, Object.assign({ x: HILL.feet[0], y: HILL.feet[1], h: HILL.h, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, cheek: o.look > 0.2, belt: true, hands: false, armL: [0.1, 0.25], armR: [-0.1, 0.25] }, o));
   const h = HILL.h, x = HILL.feet[0], y = HILL.feet[1];
   const wind = o.hem || 0;
   for (let k = 0; k < 4; k++) {   // soft coat folds pushed by the wind
@@ -775,18 +822,19 @@ const S18 = {
   id: 'S18', t0: 166.9, t1: 168.4, clear: [0, 0, 0],
   layers: () => [{ plate: 'hill', D: 4.2, sub: [360, 640, 1100, 2100] }],
   draw(F, t) {
-    // the light sinks to a grazing angle: only the ridges of paint still shine
-    const dark = smooth(prog(t, 166.9, 167.25));
-    const post = drawS17(F, B(210), dark);
-    const c = post.c;
-    if (t >= 167.6) {
-      const s = S();
-      firstStroke(s, c.x, c.y + 20 / c.zoom, { scale: 1 / c.zoom });
-      F.E.drawNow(s, { cam: c, t, appear: 167.6, appDur: 0.14 });
+    // the light sinks to a grazing angle, the ridges glow for a moment, then everything is gone
+    if (t < 167.5) {
+      const dark = smooth(prog(t, 166.9, 167.25));
+      const post = drawS17(F, B(210), dark);
+      delete post.c;
+      return Object.assign(post, { expo: lerp(1, 0.55, dark) * (1 - smooth(prog(t, 167.2, 167.5))) });
     }
-    delete post.c;
-    const lit = t >= 167.6 ? smooth(prog(t, 167.6, 167.75)) : 0;
-    return Object.assign(post, { expo: lerp(1, 0.55, dark), glow: [0.5, 0.51, 0.05, 9 * lit, 1, 0.7, 0.35] });
+    // 167.6 s, the single note: in the empty dark, the first stroke lands (and stays for S19 to grow from)
+    const s = S();
+    if (t >= 167.6) firstStroke(s, 540, 980);
+    F.E.drawNow(s, { cam: cam(540, 960, 1), t, appear: 167.6, appDur: 0.14 });
+    const lit = smooth(prog(t, 167.6, 167.75));
+    return { amb: 0.5, dif: 0.8, spec: 0.35, vig: 0.4, light: [0.6, -0.6, 0.45], glow: [0.5, 0.51, 0.06, 4 * lit, 1, 0.7, 0.35] };
   },
 };
 
