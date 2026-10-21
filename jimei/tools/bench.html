@@ -1,0 +1,37 @@
+<!doctype html><meta charset="utf-8"><canvas id="c"></canvas>
+<script type="module">
+import { Impasto, Strokes, KNIFE, DAB, LINE, hex } from '../engine/impasto.js';
+import { Ref, paintRef } from '../engine/plate.js';
+const E = new Impasto(document.getElementById('c'), { W: 1080, H: 1920, ss: 2 });
+const t0 = performance.now();
+const ref = new Ref(1440, 2560);
+ref.fill({ rect: [0, 0, 1440, 2560] }, { lin: [0, 0, 0, 1300], stops: [[0, '#3d5a8a'], [0.6, '#e9a37a'], [1, '#f2c14e']] }, { dir: 0, maxR: 60, group: 'sky' });
+ref.fill([[0, 1250], [1440, 1200], [1440, 2560], [0, 2560]], { lin: [0, 1200, 0, 2560], stops: [[0, '#c9a24a'], [1, '#e3c05a']] }, { dir: 0.15, maxR: 40 });
+ref.fill([[200, 1260], [200, 700], [560, 640], [560, 1250]], '#b88a5a', { dir: Math.PI / 2, maxR: 34 });
+ref.fill({ rect: [300, 800, 90, 130] }, '#f0a04b', { maxR: 12 });
+ref.fill([[700, 1700], [760, 1400], [820, 1400], [880, 1700]], '#2b2420', { maxR: 10, run: 0.1 });
+ref.fill({ circle: [790, 1370, 34] }, '#3a302a', { maxR: 8, run: 0 });
+ref.line([[0, 600], [1440, 660]], 3, '#2b2420', {});
+const S = paintRef(ref, { R: [56, 34, 20, 12, 7, 4] });
+const t1 = performance.now();
+const B = E.batch(S.data());
+const tex = E.texture(ref.under(1.5));
+const gl = E.gl; const T = (f) => { gl.finish(); gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4)); const a = performance.now(); f(); gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4)); return (performance.now()-a)|0; };
+const cam = { x: 720, y: 1280, zoom: 1 };
+const rv = { revW: [720, 1300, 1 / 600], reveal: 0, revDur: 0.4, grey: 1, t: 1.0 };
+const prof = {};
+let C;
+prof.bake = T(() => { C = E.cache([0, 0, 1440, 2560], 2.5); E.bakeBegin(C); E.under(tex, 1440, 2560, rv); E.draw(B, rv); E.bakeEnd(); });
+const sparkle = () => { const d = new Strokes(); for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; d.push({ x: 960 + Math.cos(a) * 60, y: 540 + Math.sin(a) * 60, ang: a, len: 120, wid: 46, c: hex('#D97757'), c2: hex('#f0a07a'), type: KNIFE, taper: .95, seed: k }); } return d; };
+const live = () => { E.begin(); E.under(tex, 1440, 2560, { cam, ...rv }); E.draw(B, { cam, ...rv }); E.drawNow(sparkle(), { cam }); E.finish({}); };
+const cached = (z = 1) => { E.begin(); E.drawCache(C, { cam: { ...cam, zoom: z }, ...rv }); E.drawNow(sparkle(), { cam: { ...cam, zoom: z } }); E.finish({}); };
+prof.live = T(live);
+prof.cachedFrame = T(cached);
+prof.cachedFrameYUV = T(() => { cached(); E.readYUV(); });
+prof.drawCacheOnly = T(() => { E.begin(); E.drawCache(C, { cam, ...rv }); });
+prof.finishOnly = T(() => E.finish({}));
+live(); await fetch('/png?name=live', { method: 'POST', body: E.readRGBA() });
+cached(); await fetch('/png?name=cached', { method: 'POST', body: E.readRGBA() });
+cached(1.25); await fetch('/png?name=cached125', { method: 'POST', body: E.readRGBA() });
+window.__R = { maxTex: E.maxTex, cacheD: C.D, strokes: S.count, paintRef: (t1 - t0) | 0, prof };
+</script>

@@ -1,0 +1,6 @@
+out/
+*.mp4
+*.parts/
+*.wav
+*.flac
+node_modules/
