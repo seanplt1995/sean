@@ -13,6 +13,9 @@ const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y
 function lines(text, max = 16) {
   if ([...text].length <= max) return [text];
   const ch = [...text], mid = ch.length / 2;
+  // a full-width space is the natural break in a credit line; otherwise the punctuation nearest the middle
+  const sp = ch.indexOf('　');
+  if (sp > 0 && sp <= max && ch.length - sp - 1 <= max) return [ch.slice(0, sp).join(''), ch.slice(sp + 1).join('')];
   let best = -1, bd = 1e9;
   ch.forEach((c, i) => { if ('，、：。—'.includes(c) && i < ch.length - 1) { const d = Math.abs(i + 1 - mid); if (d < bd && i + 1 <= max && ch.length - i - 1 <= max) { bd = d; best = i + 1; } } });
   if (best < 0) best = Math.ceil(mid);

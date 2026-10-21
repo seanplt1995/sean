@@ -666,7 +666,7 @@ function topFigure(out, o) {
 const RING = [];   // the people who bring lamps: four groups from four sides, settling on a loose ring
 for (let g = 0; g < 4; g++) for (let k = 0; k < 6; k++) {
   const side = g * Math.PI / 2 + 0.4, ang = side + (k - 2.5) * 0.11;
-  RING.push({ g, b: 180 + g * 4 + k * 0.35, from: [OVER.c[0] + Math.cos(ang) * 1500, OVER.c[1] + Math.sin(ang) * 1500], to: [OVER.c[0] + Math.cos(side + (k - 2.5) * 0.26) * (300 + (k % 2) * 40), OVER.c[1] + Math.sin(side + (k - 2.5) * 0.26) * (300 + (k % 2) * 40)], coat: ['#2e3a5c', '#3a3f52', '#283350', '#3e4660'][k % 4] });
+  RING.push({ g, b: 180 + g * 4 + k * 0.2, from: [OVER.c[0] + Math.cos(ang) * 1050, OVER.c[1] + Math.sin(ang) * 1050], to: [OVER.c[0] + Math.cos(side + (k - 2.5) * 0.26) * (300 + (k % 2) * 40), OVER.c[1] + Math.sin(side + (k - 2.5) * 0.26) * (300 + (k % 2) * 40)], coat: ['#2e3a5c', '#3a3f52', '#283350', '#3e4660'][k % 4] });
 }
 function circlingCrows(out, t, o = {}) {
   for (let k = 0; k < (o.n || 6); k++) {
@@ -697,7 +697,7 @@ const S15 = {
     } else F.store.drawPlate('overNight', { cam: c, t });
     const s = S();
     for (const r of RING) {
-      const t0 = B(r.b), k = clamp01((t - t0) / 6.5);
+      const t0 = B(r.b), k = clamp01((t - t0) / 3.0);
       if (t < t0) continue;
       const x = lerp(r.from[0], r.to[0], easeOut(k)), y = lerp(r.from[1], r.to[1], easeOut(k));
       topFigure(s, { x, y, s: 44, ang: Math.atan2(r.to[1] - r.from[1], r.to[0] - r.from[0]), phase: k < 1 ? beatAt(t) * 0.5 : 0, lamp: true, coat: hex(r.coat), seed: r.g * 10 + RING.indexOf(r) });
@@ -757,7 +757,7 @@ const S17 = {
 function drawS17(F, t, dark) {
   const E = F.E;
   // from the boots up the body to the side of the face, easing to a stop at b208
-  const up = easeOut(prog(t, B(204), B(208)));
+  const up = easeInOut(prog(t, B(204), B(208)));
   const c = cam(720, lerp(1640, 1195, up), 2.3);
   F.store.drawPlate('hill', { cam: c, t, grey: 1, allowSoft: true });
   const s = S();
