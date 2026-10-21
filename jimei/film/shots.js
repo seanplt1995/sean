@@ -222,18 +222,27 @@ const S05 = {
     // the lamp is turned up at b56: colour spreads 260 px from it in two beats, then stops
     const tR = Math.min(t, B(56) + 1.58 + 0.4);
     F.store.drawPlate('window', { cam: c, t: tR, grey: 1, reveal: B(56), revDur: 0.4, revW });
-    const s = S();
-    const up = smooth(prog(t, B(56), B(56) + 0.35));
-    lantern(s, { x: w.lamp[0], y: w.lamp[1], s: 120, lit: 0.35 + 0.65 * up, t, gmul: 0, seed: 1 });
-    // a hand from inside the room: reaches in, stops at b55 (anticipation), turns the wick up at b56, withdraws
+    // the woman who writes by this window, half-length behind the sill: she leans to the lamp, reaches for the
+    // wick at b52, holds at b55, turns it up at b56 and lets the hand fall back to the sill
+    const wo = S(), hW = 836, fx = 760, fy = w.win.y1 + 0.45 * hW;
     const reach = easeOut(prog(t, B(52), B(55))) * (1 - easeInOut(prog(t, B(57.5), B(59.5))));
-    if (reach > 0.01) {
-      const twist = spring(t, B(56), 0.25) * 0.5;
-      const ex = w.win.x1 - 40, hx = lerp(ex - 20, w.lamp[0] + 62, reach), hy = w.lamp[1] - 52 + (1 - reach) * 30;
-      s.push({ x: (hx + ex) / 2 + 14, y: hy + 14 - (1 - reach) * 10, ang: Math.atan2(-30 * (1 - reach) - 10, ex - hx), len: Math.max(24, ex - hx + 30), wid: 46, c: hex('#4a3b33'), c2: hex('#33281f'), type: KNIFE, seed: 5101, run: 0, gmul: 0, hgt: 0.9, taper: -0.2 });
-      s.push({ x: hx - 6, y: hy + 6, ang: -0.3 + twist, len: 46, wid: 34, c: hex('#c49478'), c2: hex('#a87a60'), type: DAB, seed: 5102, gmul: 0, hgt: 0.8 });
-      s.push({ x: hx - 30, y: hy + 2 - twist * 10, ang: Math.PI + 0.4 + twist, len: 26, wid: 12, c: hex('#b88a6e'), type: KNIFE, taper: 0.4, seed: 5103, gmul: 0, run: 0 });
-    }
+    const twist = spring(t, B(56), 0.25);
+    const shL = [fx - 0.112 * hW, fy - 0.841 * hW];
+    const rest = [shL[0] + 64, w.win.y1 - 30], knob = [w.lamp[0] + 54, w.lamp[1] - 46 - twist * 6];
+    const hand = [lerp(rest[0], knob[0], reach), lerp(rest[1], knob[1], reach) - Math.sin(reach * Math.PI) * 30];
+    // she is lit by the lamp alone: dim until the wick goes up at b56
+    const up = smooth(prog(t, B(56), B(56) + 0.35)), lk = (c0) => scalec(hex(c0), 0.5 + 0.5 * up);
+    const her = figure(wo, { x: fx, y: fy, h: hW, facing: 'front', coat: lk('#3f5266'), skin: lk('#b5856a'), hair: lk('#2a201c'), longHair: true,
+      look: -0.55 - 0.1 * reach, tiltHead: -0.35 - 0.25 * reach, light: -1, collar: false, scarf: lk('#7a4a40'),
+      armL: ik(shL, hand, hW, -1), armR: [0.22, 2.05], seed: 41, gmul: 0 });
+    // the notebook she writes in, held against her chest
+    const nb = her._handR;
+    wo.push({ x: nb[0] - 22, y: nb[1] - 30, ang: 1.38, len: 96, wid: 66, c: lk('#bfae8e'), c2: lk('#a8967a'), type: KNIFE, seed: 5104, run: 0, gmul: 0, hgt: 0.9, skew: 0 });
+    wo.push({ x: nb[0] - 22 + 32, y: nb[1] - 30, ang: 1.38, len: 96, wid: 9, c: lk('#6a4a36'), type: KNIFE, seed: 5105, run: 0, gmul: 0, hgt: 1, skew: 0 });
+    wo.push({ x: nb[0] + 2, y: nb[1] - 8, ang: 2.75, len: 30, wid: 18, c: lk('#b5856a'), c2: lk('#9a6e56'), type: DAB, seed: 5106, gmul: 0, hgt: 0.7 });
+    E.drawNow(wo, { cam: c, t, clip: [w.win.x0, w.win.y0, w.win.x1, w.win.y1 + 2] });
+    const s = S();
+    lantern(s, { x: w.lamp[0], y: w.lamp[1], s: 120, lit: 0.35 + 0.65 * up, t, gmul: 0, seed: 1 });
     E.drawNow(s, { cam: c, t });
     const ls = [(w.lamp[0] - c.x) * c.zoom / 1080 + 0.5, (w.lamp[1] - 70 - c.y) * c.zoom / 1920 + 0.5];
     return Object.assign({}, NIGHT_POST, { glow: [ls[0], ls[1], 0.12 + 0.1 * up, 0.25 + 0.5 * up, 1, 0.62, 0.3] });

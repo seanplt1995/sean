@@ -27,7 +27,7 @@ export function firstStroke(out, x, y, o = {}) {
 //     sway (standing weight shift −1…1), coat, lit, trousers, hair, skin, scarf (colour), collar, collarLift,
 //     sit (seat height in h), armL / armR ([upper-arm angle from straight down, + = screen right; elbow bend toward
 //     the body] — front/back views), pockets, hands (false hides them), hem (wind ±), look (+ up / − down),
-//     light (−1 lit from the left, +1 from the right), coatLen, child, seed, gmul, alpha}
+//     light (−1 lit from the left, +1 from the right), coatLen, child, longHair (front view), seed, gmul, alpha}
 export function figure(out, o) {
   const h = o.h, s0 = (o.seed || 0) * 97;
   const facing = o.facing || 'back', side = facing === 'left' || facing === 'right', front = facing === 'front', dir = facing === 'left' ? -1 : 1;
@@ -194,6 +194,8 @@ export function figure(out, o) {
   const hw = headW * h, hh = headH * h;
   const hairLit = mixc(hair, [0.62, 0.52, 0.44], 0.22);
   if (front) {
+    // long hair: two dark falls behind the face, either side of the neck, down to the shoulders
+    if (o.longHair) for (const sg of [-1, 1]) push({ x: hd[0] + sg * hw * 0.4, y: hd[1] + hh * 0.42, ang: Math.PI / 2 + sg * 0.06, len: hh * 1.25, wid: hw * 0.46, c: hair, c2: sg * Lr > 0 ? hairLit : hair, type: DAB, hgt: 0.9 });
     blade([nk[0], nk[1] + h * 0.005], [nk[0], hd[1] + hh * 0.3], h * 0.03, scalec(skin, 0.8), skin, { run: 0, hgt: 0.5 });
     push({ x: hd[0], y: hd[1] + hh * 0.06, ang: Math.PI / 2, len: hh * 0.9, wid: hw * 0.92, c: skin, c2: mixc(skin, [1, 0.9, 0.8], 0.15), type: DAB, hgt: 0.85 });
     blade([hd[0] - Lr * hw * 0.36, hd[1] - hh * 0.08], [hd[0] - Lr * hw * 0.3, hd[1] + hh * 0.4], hw * 0.26, scalec(skin, 0.76), scalec(skin, 0.82), { alpha: al * 0.8, taper: 0.45, run: 0 });
@@ -202,6 +204,8 @@ export function figure(out, o) {
     push({ x: hd[0] + Lr * hw * 0.04, y: hd[1] - hh * (0.3 - down * 0.1), ang: 0.15 * Lr, len: hw * 1.12, wid: hh * (0.5 + down * 0.25), c: hair, c2: hairLit, type: DAB, hgt: 1 });
     blade([hd[0] - Lr * hw * 0.42, hd[1] - hh * 0.36], [hd[0] + Lr * hw * 0.5, hd[1] - hh * 0.06], hh * 0.2, hairLit, hair, { taper: 0.5, run: 0, bend: 0.12, alpha: al * 0.9 });
     for (const sg of [-1, 1]) blade([hd[0] + sg * hw * 0.44, hd[1] - hh * 0.2], [hd[0] + sg * hw * 0.48, hd[1] + hh * 0.2], hw * 0.16, hair, hair, { taper: 0.6, run: 0 });
+    // and the locks that fall past the cheeks onto the shoulders, the lit one catching the light
+    if (o.longHair) for (const sg of [-1, 1]) blade([hd[0] + sg * hw * 0.44, hd[1] - hh * 0.12], [hd[0] + sg * hw * 0.58, hd[1] + hh * 0.98], hw * 0.17, sg * Lr > 0 ? hairLit : hair, hair, { taper: 0.6, run: 0.05, bend: -sg * 0.05 });
   } else if (side) {
     push({ x: hd[0] + dir * hw * 0.12, y: hd[1] + hh * 0.06, ang: Math.PI / 2 - dir * 0.12, len: hh * 0.86, wid: hw * 0.74, c: skin, c2: scalec(skin, 0.85), type: DAB, hgt: 0.85 });
     push({ x: hd[0] - dir * hw * 0.12, y: hd[1] - hh * 0.07, ang: Math.PI / 2 + dir * 0.35, len: hh * 0.9, wid: hw * 0.86, c: hair, c2: hairLit, type: DAB, hgt: 1 });
