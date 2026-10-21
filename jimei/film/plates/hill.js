@@ -32,5 +32,6 @@ export function plateHill() {
   const [rx, ry] = HILL.rock;
   ref.fill(blob([[rx - 110, ry + 30], [rx - 90, ry - 40], [rx - 20, ry - 70], [rx + 70, ry - 50], [rx + 110, ry + 10], [rx + 90, ry + 40]]), '#55565a', { dir: 0.3, maxR: 14, edge: 3, group: 'rock' });
   ref.fill(blob([[rx - 70, ry - 40], [rx - 10, ry - 66], [rx + 60, ry - 48], [rx + 20, ry - 30]]), '#9a9ca0', { dir: 0.3, maxR: 8, group: 'rock' });
-  return { ref, w: W, h: H, R: [54, 34, 20, 12, 7, 4] };
+  // the climb ends in a 2.3× close-up, so the knife marks start finer than on the ground-level plates
+  return { ref, w: W, h: H, R: [20, 13, 8, 5.5, 4, 3] };
 }

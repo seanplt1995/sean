@@ -42,6 +42,7 @@ export function figure(out, o) {
   const blade = (a, b, w, c, c2, q = {}) => push(Object.assign({ x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2, ang: Math.atan2(b[1] - a[1], b[0] - a[0]), len: Math.hypot(b[0] - a[0], b[1] - a[1]), wid: w, c, c2, type: KNIFE }, q));
   const shadeBy = (k) => (k > 0 ? mixc(coat, litC, Math.min(1, k) * 0.85) : mixc(coat, shadeC, Math.min(1, -k) * 0.85));
   const child = o.child ? 1 : 0;
+  const big = h >= 380;   // close figures get softer, more drawn shapes; the small crowds keep their simple blocks
   const L1 = 0.245 - 0.03 * child, L2 = 0.238 - 0.03 * child, ankleH = 0.03;
   const headH = 0.112 * (1 + 0.28 * child), headW = 0.08 * (1 + 0.22 * child);
   const torso = 0.328 - 0.04 * child, shW = 0.112 * (1 - 0.1 * child);
@@ -78,7 +79,8 @@ export function figure(out, o) {
       const el = [sh[0] + Math.sin(a1) * 0.19, sh[1] - Math.cos(a1) * 0.19, sh[2]];
       return { sh, el, wr: [el[0] + Math.sin(a2) * 0.18, el[1] - Math.cos(a2) * 0.18, sh[2]], a2 };
     }
-    if (o.pockets && !side) return { sh, el: [sh[0] + sx * 0.04, sh[1] - 0.17, sh[2] + 0.01], wr: [sh[0] + sx * 0.012, sh[1] - 0.3, sh[2] + 0.03], hidden: true };
+    if (o.pockets && !side) return big ? { sh, el: [sh[0] + sx * 0.022, sh[1] - 0.18, sh[2] + 0.01], wr: [sh[0] - sx * 0.004, sh[1] - 0.3, sh[2] + 0.03], hidden: true }
+      : { sh, el: [sh[0] + sx * 0.04, sh[1] - 0.17, sh[2] + 0.01], wr: [sh[0] + sx * 0.012, sh[1] - 0.3, sh[2] + 0.03], hidden: true };
     const b = walking ? -0.8 * A * Math.sin(ph + k * Math.PI) : 0.04, e = 0.2 + (walking ? 0.28 * Math.max(0, Math.sin(ph + k * Math.PI + Math.PI)) : 0.06);
     const ox = side ? 0 : sx * 0.014;
     const el = [sh[0] + ox, sh[1] - 0.19 * Math.cos(b), sh[2] + 0.19 * Math.sin(b)];
@@ -93,9 +95,9 @@ export function figure(out, o) {
     const j = J[k], hp = P3(j.hp), kp = P3(j.kp), ap = P3(j.ap), tp = P3(j.tp), near = !side || k === 1;
     const tc = near ? trous : scalec(trous, 0.8);
     blade(hp, kp, h * 0.068, tc, scalec(tc, 1.2), { type: BRUSH, taper: 0.2, bend: 0.02 });
-    blade(kp, ap, h * 0.052, tc, scalec(tc, 1.25), { type: BRUSH, taper: 0.28 });
+    blade(kp, ap, h * (big ? 0.056 : 0.052), tc, scalec(tc, 1.25), { type: BRUSH, taper: big ? 0.42 : 0.28, bend: big ? 0.025 * (k ? 1 : -1) : 0 });
     if (side) blade([ap[0] - dir * h * 0.018, ap[1]], tp, h * 0.036, shoe, shoe, { taper: 0.35, run: 0, hgt: 0.6 });
-    else push({ x: (ap[0] + tp[0]) / 2, y: Math.max(ap[1], tp[1]) - h * 0.008, ang: 0, len: h * 0.062, wid: h * 0.032, c: shoe, type: DAB, hgt: 0.55 });
+    else push({ x: (ap[0] + tp[0]) / 2 + (big ? (k ? 1 : -1) * h * 0.006 : 0), y: Math.max(ap[1], tp[1]) - h * 0.008, ang: big ? (k ? 0.18 : -0.18) : 0, len: h * (big ? 0.07 : 0.062), wid: h * (big ? 0.028 : 0.032), c: shoe, type: DAB, hgt: 0.55 });
   };
   legOrder.forEach(drawLeg);
   // ── the coat ──
@@ -116,13 +118,14 @@ export function figure(out, o) {
     coatPt = (s, t) => P3([hipX * 0.35, yAt(t), lean * (1 - t) + lerp(at(back3, t), at(front3, t), (s + 1) / 2)]);
   } else {
     const hemZ = sit ? L1 * 0.62 : kz * 0.5;
-    coatPt = (s, t) => P3([lerp(neck[0], hemCX, t) + s * wProf(t), yAt(t), lerp(lean, hemZ, t)]);
+    const drop = (s, t) => big ? 0.036 * s * s * Math.max(0, 1 - t / 0.15) : 0;   // shoulders fall away from the neck
+    coatPt = (s, t) => P3([lerp(neck[0], hemCX, t) + s * wProf(t), yAt(t) - drop(s, t), lerp(lean, hemZ, t)]);
   }
   // long knife panels from the shoulders to the hem, widening a little toward the hem
   const nu = h > 520 ? 5 : h > 170 ? 4 : 3;
   const sideK = side ? -dir * Lr : 1;     // in profile the light falls on the front or the back
   for (let i = 0; i < nu; i++) {
-    const sU = -1 + (2 * i + 1) / nu, k = side ? sU * sideK : sU * Lr;
+    const sU = -1 + (2 * i + 1) / nu, k = (side ? sU * sideK : sU * Lr) * (big ? 0.6 : 1);
     const a = coatPt(sU * 0.72, 0.03), b = coatPt(sU * 0.8, 0.985);
     const wTop = side ? Math.abs(coatPt(1, 0.15)[0] - coatPt(-1, 0.15)[0]) : 2 * wProf(0.15) * h;
     blade(a, b, wTop / nu * 1.3, shadeBy(k + 0.05), shadeBy(k - 0.3), { taper: -0.22, bend: 0.02 * sU, run: 0.02, skew: 0.35 * (i % 2 ? 1 : -1) });
@@ -142,17 +145,24 @@ export function figure(out, o) {
     blade(a, b, h * 0.022, isLit ? mixc(litC, [1, 0.97, 0.9], 0.2) : scalec(shadeC, 0.78), isLit ? litC : shadeC, { taper: 0, bend: off / (L * 0.5), run: 0, hgt: 0.9, skew: 0 });
   }
   // sloped shoulders: one rounded stroke over the top of the coat
-  {
+  if (big && !side) {
+    const n = P3([neck[0], shY + 0.006, lean]);
+    push({ x: n[0], y: n[1] + h * 0.022, ang: 0, len: h * 0.1, wid: h * 0.05, c: coat, c2: mixc(coat, shadeC, 0.3), type: DAB, hgt: 0.8 });
+    for (const sg of [-1, 1]) {
+      const tip = coatPt(sg * 1.0, 0.03), lit = sg * Lr > 0;
+      blade([n[0] + sg * h * 0.012, n[1] + h * 0.008], [tip[0] - sg * h * 0.008, tip[1] + h * 0.016], h * 0.046, lit ? mixc(coat, litC, 0.45) : mixc(coat, shadeC, 0.2), coat, { type: BRUSH, bend: -0.12 * sg * (front ? -1 : 1) * 0, taper: 0.15, run: 0 });
+    }
+  } else {
     const l = coatPt(-1.05, 0.02), r = coatPt(1.05, 0.02), n = P3([neck[0], shY + 0.012, lean]);
     blade([l[0], l[1] + h * 0.012], [r[0], r[1] + h * 0.012], h * 0.05, mixc(coat, litC, 0.25), coat, { type: BRUSH, bend: (n[1] - (l[1] + r[1]) / 2) / (Math.hypot(r[0] - l[0], r[1] - l[1]) * 0.5) * 0.5, taper: 0, run: 0 });
   }
   if (o.belt) {   // a belted waist: the band and its knot
-    blade(coatPt(-1.02, 0.36), coatPt(1.02, 0.36), h * 0.026, scalec(shadeC, 0.85), shadeC, { run: 0, skew: 0, bend: -0.04, hgt: 1 });
+    blade(coatPt(-1.02, 0.36), coatPt(1.02, 0.36), h * (big ? 0.019 : 0.026), scalec(shadeC, 0.85), shadeC, { run: 0, skew: 0, bend: -0.04, hgt: 1 });
     const kx = coatPt(Lr * 0.45, 0.37);
     blade(kx, [kx[0] + Lr * h * 0.012, kx[1] + h * 0.09], h * 0.018, shadeC, scalec(shadeC, 0.85), { taper: 0.4, run: 0, bend: 0.08 });
   }
   // hem, folds, seams
-  blade(coatPt(-1, 0.985), coatPt(1, 0.985), h * 0.02, scalec(shadeC, 0.9), shadeC, { run: 0.15, skew: 0.5, bend: 0.03 });
+  blade(coatPt(-1, 0.985), coatPt(1, 0.985), h * (big ? 0.012 : 0.02), scalec(shadeC, 0.9), shadeC, { run: 0.15, skew: 0.5, bend: big ? 0.05 : 0.03, alpha: al * (big ? 0.7 : 1) });
   if (h > 150) for (const fs of [-0.4, 0.34]) blade(coatPt(fs, 0.5), coatPt(fs + hem * 0.15, 0.96), h * 0.012, scalec(shadeC, 0.9), shadeC, { alpha: al * 0.6, taper: 0.6, bend: 0.05 * fs, run: 0.3 });
   if (!side && h > 200) {
     if (front) {
@@ -164,13 +174,20 @@ export function figure(out, o) {
   const drawArm = (k) => {
     const a = arms[k], sh = P3(a.sh), el = P3(a.el), wr = P3(a.wr), sx = k ? 1 : -1;
     const isLit = side ? k === 1 && sideK > 0 : sx * Lr > 0, ac = isLit ? mixc(coat, litC, 0.6) : shadeBy(side && k === 0 ? -0.9 : -0.35);
-    const sh2 = [sh[0] - sx * h * 0.02, sh[1] + h * 0.02];
+    const sh2 = big && !side ? [sh[0] - sx * h * 0.026, sh[1] + h * 0.042] : [sh[0] - sx * h * 0.02, sh[1] + h * 0.02];
     const ex = (a, b, f) => [b[0] + (b[0] - a[0]) * f, b[1] + (b[1] - a[1]) * f];
-    blade(sh2, ex(sh2, el, 0.12), h * 0.052, ac, ac, { taper: 0.1, bend: 0.03 * sx, skew: 0, run: 0.02 });
-    blade(ex(wr, el, 0.1), wr, h * 0.046, ac, shadeBy(-0.45), { taper: 0.18, skew: 0, run: 0.02 });
-    if (isLit) blade(sh2, el, h * 0.013, mixc(litC, [1, 0.97, 0.9], 0.2), litC, { run: 0, hgt: 0.9, bend: 0.04 * sx });
+    if (big) {
+      blade(sh2, ex(sh2, el, 0.1), h * 0.05, ac, ac, { taper: 0.22, bend: 0.05 * sx, skew: 0, run: 0.02, type: BRUSH });
+      push({ x: el[0], y: el[1], ang: Math.atan2(wr[1] - sh2[1], wr[0] - sh2[0]), len: h * 0.05, wid: h * 0.042, c: ac, c2: ac, type: DAB, hgt: 0.7 });
+      blade(ex(wr, el, 0.06), wr, h * 0.04, ac, shadeBy(-0.45), { taper: 0.3, skew: 0, run: 0.02, type: BRUSH, bend: -0.03 * sx });
+      if (isLit) blade(sh2, el, h * 0.009, mixc(litC, [1, 0.97, 0.9], 0.2), litC, { run: 0, hgt: 0.9, bend: 0.06 * sx, taper: 0.6, alpha: al * 0.7 });
+    } else {
+      blade(sh2, ex(sh2, el, 0.12), h * 0.052, ac, ac, { taper: 0.1, bend: 0.03 * sx, skew: 0, run: 0.02 });
+      blade(ex(wr, el, 0.1), wr, h * 0.046, ac, shadeBy(-0.45), { taper: 0.18, skew: 0, run: 0.02 });
+      if (isLit) blade(sh2, el, h * 0.013, mixc(litC, [1, 0.97, 0.9], 0.2), litC, { run: 0, hgt: 0.9, bend: 0.04 * sx });
+    }
     const dx = wr[0] - el[0], dy = wr[1] - el[1], dl = Math.hypot(dx, dy) || 1;
-    blade([wr[0] - dx / dl * h * 0.022, wr[1] - dy / dl * h * 0.022], wr, h * 0.047, scalec(shadeC, 0.92), shadeC, { run: 0 });   // cuff
+    blade([wr[0] - dx / dl * h * 0.022, wr[1] - dy / dl * h * 0.022], wr, h * (big ? 0.038 : 0.047), scalec(shadeC, 0.92), shadeC, { run: 0, alpha: al * (big ? 0.8 : 1) });   // cuff
     const hd = [wr[0] + dx / dl * h * 0.026, wr[1] + dy / dl * h * 0.026];
     if (!a.hidden && o.hands !== false || (k === 0 && o.handL)) {
       push({ x: hd[0], y: hd[1], ang: Math.atan2(dy, dx), len: h * 0.04, wid: h * 0.026, c: skin, c2: scalec(skin, 0.82), type: DAB, hgt: 0.6 });
@@ -188,7 +205,10 @@ export function figure(out, o) {
   if (o.collar !== false) {
     const cl = o.collarLift || 1;
     if (side) blade([nk[0] - dir * h * 0.035, nk[1] + h * 0.01], [nk[0] - dir * h * 0.03, nk[1] - h * 0.055 * cl], h * 0.04, shadeBy(-0.3), coat, { taper: 0.3, hgt: 1 });
-    else for (const sg of [-1, 1]) blade([nk[0] + sg * h * 0.03, nk[1] + h * 0.012], [nk[0] + sg * h * 0.05 * cl, nk[1] - h * 0.05 * cl], h * 0.036, sg * Lr > 0 ? mixc(coat, litC, 0.5) : shadeBy(-0.5), coat, { taper: 0.4, hgt: 1 });
+    else if (big) {
+      blade([nk[0] - h * 0.032, nk[1] + h * 0.004], [nk[0] + h * 0.032, nk[1] + h * 0.004], h * 0.03 * cl, shadeBy(-0.35), coat, { run: 0, bend: front ? -0.2 : 0.2, hgt: 1 });
+      for (const sg of [-1, 1]) blade([nk[0] + sg * h * 0.022, nk[1] - h * 0.004], [nk[0] + sg * h * 0.072, nk[1] + h * 0.034], h * 0.032, sg * Lr > 0 ? mixc(coat, litC, 0.5) : shadeBy(-0.5), coat, { taper: 0.55, hgt: 1, bend: 0.1 * sg });
+    } else for (const sg of [-1, 1]) blade([nk[0] + sg * h * 0.03, nk[1] + h * 0.012], [nk[0] + sg * h * 0.05 * cl, nk[1] - h * 0.05 * cl], h * 0.036, sg * Lr > 0 ? mixc(coat, litC, 0.5) : shadeBy(-0.5), coat, { taper: 0.4, hgt: 1 });
   }
   // ── head ──
   const hw = headW * h, hh = headH * h;
@@ -201,9 +221,19 @@ export function figure(out, o) {
     blade([hd[0] - Lr * hw * 0.36, hd[1] - hh * 0.08], [hd[0] - Lr * hw * 0.3, hd[1] + hh * 0.4], hw * 0.26, scalec(skin, 0.76), scalec(skin, 0.82), { alpha: al * 0.8, taper: 0.45, run: 0 });
     const down = Math.max(0, -look);
     // hair: a soft mass over the crown, swept to one side, falling past the temples
-    push({ x: hd[0] + Lr * hw * 0.04, y: hd[1] - hh * (0.3 - down * 0.1), ang: 0.15 * Lr, len: hw * 1.12, wid: hh * (0.5 + down * 0.25), c: hair, c2: hairLit, type: DAB, hgt: 1 });
-    blade([hd[0] - Lr * hw * 0.42, hd[1] - hh * 0.36], [hd[0] + Lr * hw * 0.5, hd[1] - hh * 0.06], hh * 0.2, hairLit, hair, { taper: 0.5, run: 0, bend: 0.12, alpha: al * 0.9 });
-    for (const sg of [-1, 1]) blade([hd[0] + sg * hw * 0.44, hd[1] - hh * 0.2], [hd[0] + sg * hw * 0.48, hd[1] + hh * 0.2], hw * 0.16, hair, hair, { taper: 0.6, run: 0 });
+    if (big) {
+      push({ x: hd[0], y: hd[1] - hh * (0.27 - down * 0.08), ang: 0, len: hw * 1.02, wid: hh * (0.32 + down * 0.16), c: hair, c2: mixc(hair, hairLit, 0.3), type: DAB, hgt: 1 });
+      const part = [hd[0] + Lr * hw * 0.16, hd[1] - hh * (0.5 - down * 0.06)];
+      for (let q = 0; q < 8; q++) {
+        const sg = q < 4 ? -1 : 1, j = q % 4, far = sg * Lr < 0;   // strands swept away from the parting, more of them to the far side
+        const end = [hd[0] + sg * hw * (0.2 + j * 0.09), hd[1] + hh * (-0.18 + j * 0.13 + (far ? 0.04 : 0))];
+        blade(part, end, hw * (0.2 - j * 0.02), sg * Lr > 0 ? hairLit : mixc(hair, hairLit, 0.12 * (j % 2)), hair, { taper: 0.8, run: 0.08, bend: sg * 0.16, alpha: al * 0.95 });
+      }
+    } else {
+      push({ x: hd[0] + Lr * hw * 0.04, y: hd[1] - hh * (0.3 - down * 0.1), ang: 0.15 * Lr, len: hw * 1.12, wid: hh * (0.5 + down * 0.25), c: hair, c2: hairLit, type: DAB, hgt: 1 });
+      blade([hd[0] - Lr * hw * 0.42, hd[1] - hh * 0.36], [hd[0] + Lr * hw * 0.5, hd[1] - hh * 0.06], hh * 0.2, hairLit, hair, { taper: 0.5, run: 0, bend: 0.12, alpha: al * 0.9 });
+      for (const sg of [-1, 1]) blade([hd[0] + sg * hw * 0.44, hd[1] - hh * 0.2], [hd[0] + sg * hw * 0.48, hd[1] + hh * 0.2], hw * 0.16, hair, hair, { taper: 0.6, run: 0 });
+    }
     // and the locks that fall past the cheeks onto the shoulders, the lit one catching the light
     if (o.longHair) for (const sg of [-1, 1]) blade([hd[0] + sg * hw * 0.44, hd[1] - hh * 0.12], [hd[0] + sg * hw * 0.58, hd[1] + hh * 0.98], hw * 0.17, sg * Lr > 0 ? hairLit : hair, hair, { taper: 0.6, run: 0.05, bend: -sg * 0.05 });
   } else if (side) {
@@ -213,9 +243,18 @@ export function figure(out, o) {
   } else {
     blade([nk[0], nk[1] + h * 0.004], [nk[0], hd[1] + hh * 0.3], h * 0.028, scalec(skin, 0.72), skin, { run: 0, hgt: 0.5 });
     push({ x: hd[0], y: hd[1] - hh * 0.04, ang: Math.PI / 2, len: hh * 0.96, wid: hw, c: hair, c2: hairLit, type: DAB, hgt: 0.9 });
-    push({ x: hd[0] + hem * hw * 0.1, y: hd[1] + hh * 0.22, ang: Math.PI / 2, len: hh * 0.42, wid: hw * 0.76, c: hair, c2: hair, type: DAB, hgt: 0.85 });
-    blade([hd[0] + Lr * hw * 0.2, hd[1] - hh * 0.44], [hd[0] + Lr * hw * 0.46, hd[1] + hh * 0.2], hw * 0.2, hairLit, hair, { taper: 0.55, run: 0, bend: -Lr * 0.12, alpha: al * 0.9 });
-    if (o.cheek || look > 0.2) blade([hd[0] + Lr * hw * 0.42, hd[1] - hh * 0.05], [hd[0] + Lr * hw * 0.46, hd[1] + hh * 0.38], hw * 0.18, mixc(skin, [1, 0.92, 0.82], 0.1), skin, { taper: 0.4, run: 0, alpha: al * 0.9 });
+    if (big) {
+      // the hair as it lies: strands from the crown down to a soft, uneven nape line, one side catching the light
+      for (let q = 0; q < 7; q++) {
+        const u = -0.9 + q * 0.3, a0 = [hd[0] + u * hw * 0.22, hd[1] - hh * (0.42 - 0.12 * u * u)], b0 = [hd[0] + u * hw * 0.36 + hem * hw * 0.06, hd[1] + hh * (0.3 + 0.1 * Math.cos(q * 2.3) - 0.08 * u * u)];
+        blade(a0, b0, hw * 0.24, u * Lr > 0.3 ? hairLit : mixc(hair, hairLit, 0.15 * ((q * 3) % 2)), hair, { taper: 0.85, run: 0.1, bend: -u * 0.12, alpha: al * 0.95 });
+      }
+      if (o.cheek || look > 0.2) push({ x: hd[0] + Lr * hw * 0.47, y: hd[1] + hh * 0.12, ang: Math.PI / 2 - Lr * 0.2, len: hh * 0.3, wid: hw * 0.16, c: mixc(skin, [1, 0.92, 0.82], 0.1), c2: skin, type: DAB, hgt: 0.7, alpha: al * 0.9 });
+    } else {
+      push({ x: hd[0] + hem * hw * 0.1, y: hd[1] + hh * 0.22, ang: Math.PI / 2, len: hh * 0.42, wid: hw * 0.76, c: hair, c2: hair, type: DAB, hgt: 0.85 });
+      blade([hd[0] + Lr * hw * 0.2, hd[1] - hh * 0.44], [hd[0] + Lr * hw * 0.46, hd[1] + hh * 0.2], hw * 0.2, hairLit, hair, { taper: 0.55, run: 0, bend: -Lr * 0.12, alpha: al * 0.9 });
+      if (o.cheek || look > 0.2) blade([hd[0] + Lr * hw * 0.42, hd[1] - hh * 0.05], [hd[0] + Lr * hw * 0.46, hd[1] + hh * 0.38], hw * 0.18, mixc(skin, [1, 0.92, 0.82], 0.1), skin, { taper: 0.4, run: 0, alpha: al * 0.9 });
+    }
   }
   if (side) drawArm(1); else { drawArm(0); drawArm(1); }
   o._head = hd; o._shoulder = P3([0, shY, lean]);

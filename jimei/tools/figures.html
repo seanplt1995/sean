@@ -8,6 +8,13 @@ const cam = { x: 540, y: 960, zoom: 1 };
 const s = new Strokes(4096);
 const ph = Number(new URLSearchParams(location.search).get('ph') || 0.15);
 const coats = ['#4a4239', '#3e4a5a', '#6a4a32', '#4a3a3e', '#3e4638', '#5e4a3a'];
+const big = new URLSearchParams(location.search).get('big');
+if (big) {
+  // the large figures of the film: the hero on the hill (S16/S17), the woman at the window (S05), the walker (S10)
+  figure(s, { x: 230, y: 1800, h: 1150, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, belt: true, hands: false, pockets: true, sway: 0.4, collarLift: 0.7, look: 0.4, cheek: true, hem: 0.3 });
+  figure(s, { x: 600, y: 1800, h: 1150, facing: 'front', coat: hex('#3f5266'), skin: hex('#b5856a'), hair: hex('#2a201c'), longHair: true, look: -0.6, tiltHead: -0.4, light: -1, collar: false, scarf: hex('#7a4a40'), armL: [0.25, 0.5], armR: [0.22, 2.05], seed: 41 });
+  figure(s, { x: 900, y: 1800, h: 1000, facing: 'back', walk: 0.3, stride: 0.14, coat: hex('#4a4239'), lit: hex('#a8865a'), seed: 1, collar: true, light: 1, belt: true, armR: [0.48, 0.12], armL: [-0.08, 0.18] });
+} else {
 // row 1: walking back / front / right / left
 figure(s, { x: 150, y: 620, h: 500, facing: 'back', walk: ph, coat: hex(coats[0]), seed: 1, light: 1 });
 figure(s, { x: 410, y: 620, h: 500, facing: 'front', walk: ph + 0.25, coat: hex(coats[1]), seed: 2, light: 1, scarf: hex('#9C3B2A') });
@@ -23,9 +30,10 @@ figure(s, { x: 1000, y: 1240, h: 330, facing: 'back', child: true, coat: hex('#8
 [[200, 300, '#5a3e2e', { pockets: true, sway: 1 }], [330, 290, '#3e4a5a', { sway: -1, armR: [0.35, 0.3] }], [440, 280, '#6a4a32', { armL: [-0.3, 0.25], sway: 0.5 }], [560, 300, '#4a3a3e', { pockets: true }],
  [680, 210, '#8a5a3a', { child: true, sway: -0.5 }], [800, 295, '#3e4638', { sway: 1, scarf: hex('#C0543F') }], [930, 285, '#5e4a3a', { pockets: true, sway: -1 }]].forEach(([x, h, c, q], i) =>
   figure(s, Object.assign({ x, y: 1860, h, facing: 'back', coat: hex(c), seed: 20 + i, light: 1 }, q)));
+}
 E.begin({ clear: hex('#d9b878') });
 E.drawNow(s, { cam });
 E.finish({ amb: 0.84, dif: 0.3, spec: 0.18, vig: 0 });
-await fetch('/png?name=figures_' + ph, { method: 'POST', body: E.readRGBA() });
+await fetch('/png?name=figures_' + (big ? 'big' : ph), { method: 'POST', body: E.readRGBA() });
 window.__R = { strokes: s.count };
 </script>

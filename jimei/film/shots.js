@@ -777,18 +777,16 @@ const S15 = {
 // ───────────────────────── act six · 灰与白 ─────────────────────────
 // the traveller close enough to need more paint: folds, seams, hair, a sliver of face
 function heroTraveller(out, t, o) {
-  const f = figure(out, Object.assign({ x: HILL.feet[0], y: HILL.feet[1], h: HILL.h, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, cheek: o.look > 0.2, belt: true, hands: false, armL: [0.1, 0.25], armR: [-0.1, 0.25] }, o));
+  const f = figure(out, Object.assign({ x: HILL.feet[0], y: HILL.feet[1], h: HILL.h, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, cheek: o.look > 0.2, belt: true, hands: false, armL: [0.1, 0.25], armR: [-0.1, 0.25] }, o, { hem: (o.hem || 0) * 1.6 }));
   const h = HILL.h, x = HILL.feet[0], y = HILL.feet[1];
   const wind = o.hem || 0;
-  for (let k = 0; k < 4; k++) {   // soft coat folds pushed by the wind
-    const u = -0.075 + k * 0.05 + wind * 0.01 * k;
-    out.push({ x: x + u * h, y: y - (0.45 + 0.06 * (k % 2)) * h, ang: -Math.PI / 2 + 0.05 * (k - 1.5) + wind * 0.06, len: h * (0.22 + 0.04 * (k % 3)), wid: h * 0.02, c: hex('#3c362f'), c2: hex('#4a4239'), type: KNIFE, alpha: 0.55, seed: 4700 + k, run: 0.5, hgt: 1.1, gmul: 1, taper: 0.5 });
+  for (let k = 0; k < 3; k++) {   // soft coat folds pushed across by the wind
+    const u = -0.06 + k * 0.05 + wind * 0.01 * k;
+    out.push({ x: x + u * h, y: y - (0.42 + 0.07 * (k % 2)) * h, ang: -Math.PI / 2 + 0.22 + 0.06 * k + wind * 0.12, len: h * (0.2 + 0.04 * (k % 2)), wid: h * 0.016, c: hex('#332e28'), c2: hex('#4a4239'), type: KNIFE, alpha: 0.35, seed: 4700 + k, run: 0.5, hgt: 1.1, gmul: 1, taper: 0.7 });
   }
   const hd = f._head;
-  for (let k = 0; k < 3; k++) out.push({ x: hd[0] + 0.035 * h + k * 0.012 * h, y: hd[1] - 0.035 * h + k * 0.018 * h, ang: 0.15 + 0.12 * k + wind * 0.1, len: h * 0.05, wid: h * 0.014, c: hex('#2a2422'), type: KNIFE, taper: 0.8, seed: 4720 + k, run: 0, gmul: 1, alpha: 0.85 });   // hair blown sideways
-  if ((o.look || 0) > 0.2) {   // looking up: the side of the face catches the light
-    out.push({ x: hd[0] + 0.045 * h, y: hd[1] + 0.006 * h, ang: Math.PI / 2 - 0.3, len: h * 0.07, wid: h * 0.03, c: hex('#d0a888'), c2: hex('#b88f74'), type: KNIFE, seed: 4730, run: 0, hgt: 0.8, gmul: 1 });
-    out.push({ x: hd[0] + 0.03 * h, y: hd[1] + 0.045 * h, ang: 0.6, len: h * 0.04, wid: h * 0.014, c: hex('#8a6a58'), type: KNIFE, seed: 4731, run: 0, gmul: 1 });
+  if ((o.look || 0) > 0.2) {   // looking up: the line of the jaw and cheek catches the light
+    out.push({ x: hd[0] + 0.039 * h, y: hd[1] + 0.012 * h, ang: Math.PI / 2 - 0.35, len: h * 0.048, wid: h * 0.012, c: hex('#c9a084'), c2: hex('#a8826a'), type: DAB, seed: 4730, hgt: 0.7, gmul: 1, alpha: 0.9 * smooth(prog(o.look, 0.2, 0.6)) });
   }
   return f;
 }
