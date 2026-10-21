@@ -1012,6 +1012,10 @@ export const SHOTS = [S01, S02, S03, S04, S05, S06, S07, S08, S09, S10, S11, S12
 
 // captions: warm white with a shadow on dark paint, dark brown on light paint — chosen from the brightness
 // actually behind the band in this frame (sRGB luma; the crossover sits where both colours hold equal contrast)
+// lines that sit over a bright sky or field crossed by one dark shape (a trunk, the traveller's coat) stay dark
+// for their whole length, with the light halo carrying them over the dark part, instead of fading through grey
+const DARK_LINES = new Set(['T11', 'T12', 'T21']);
 export function captionMode(c, t, luma) {
+  if (DARK_LINES.has(c.id)) return 0;
   return smooth(prog(luma, 0.56, 0.44));
 }
