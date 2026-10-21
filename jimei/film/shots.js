@@ -706,7 +706,8 @@ function topFigure(out, o) {
   push({ x: hd[0], y: hd[1], ang: a, len: s * 0.46, wid: s * 0.42, c: hex('#1d1a1c'), type: DAB, seed: s0 + 5 });
   if (o.lamp) {
     const lp = P(s * 0.25 + sw * s * 0.4, s * 0.62);
-    push({ x: lp[0], y: lp[1], ang: 0, len: s * 2.4, wid: s * 2.4, c: PAL.window, type: DAB, alpha: 0.18, seed: s0 + 6, hgt: 0.05, gmul: 0 });
+    // the pool of lamplight: thin washes that grow fainter outward, so it has no edge
+    for (let i = 0; i < 7; i++) { const r = 2.8 - i * 0.33; push({ x: lp[0], y: lp[1], ang: i * 1.3, len: s * r, wid: s * r * 0.94, c: mixc(PAL.window, PAL.first2, i * 0.08), type: DAB, alpha: 0.035 + i * 0.012, seed: s0 + 6 + i * 0.37, hgt: 0.01, gmul: 0 }); }
     push({ x: lp[0], y: lp[1], ang: 0, len: s * 0.36, wid: s * 0.36, c: mixc(PAL.first2, [1, 1, 0.9], 0.4), c2: PAL.window, type: DAB, seed: s0 + 7, gmul: 0, hgt: 1 });
   }
 }

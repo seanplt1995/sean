@@ -167,5 +167,6 @@ export function plateOver(variant = 'gold') {
   ref.fill(ellipsePts(tx + 120, ty + 70, 190, 70, 26, 0.5, 0.15, 3), night ? '#18214a' : '#8a6a2a', { dir: 0.5, maxR: 16, group: 'treeshadow' });
   ref.fill(ellipsePts(tx, ty, 130, 120, 26, 0, 0.18, 4), night ? '#1a2a4a' : '#3f7a5a', { dir: 0.8, maxR: 14, group: 'tree', type: DAB });
   ref.fill(ellipsePts(tx - 30, ty - 30, 70, 60, 20, 0, 0.2, 5), night ? '#3a4a70' : '#7aa65a', { dir: 0.8, maxR: 10, group: 'tree', type: DAB });
-  return { ref, w: W, h: H, R: [48, 30, 18, 11, 7, 4] };
+  // seen through a 1.0–1.6× camera, so the knife marks start a third smaller than the ground-level plates
+  return { ref, w: W, h: H, R: [32, 20, 12, 8, 5, 3] };
 }
