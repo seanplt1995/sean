@@ -441,8 +441,17 @@ const S10 = {
       c = clampCam(cam(lerp(1010, 880, smooth(p)), 1920, 1.5), [0, 0, 1440, 2560]);
       F.store.drawPlate('close', { cam: c, t, allowSoft: true });
       const px = lerp(1060, 900, p), py = 2620 - 40 * p, ph = 720 - 30 * p;
-      const f = figure(s, { x: px, y: py, h: ph, facing: 'back', walk: beatAt(t) * 0.5, stride: 0.14, coat: hex('#4a4239'), seed: 1, collar: true, light: 1, belt: true, armR: [0.48, 0.12], armL: [-0.08, 0.18], hem: 0.1 * Math.sin(t * 2) });
+      const f = figure(s, { x: px, y: py, h: ph, facing: 'back', walk: beatAt(t) * 0.5, stride: 0.14, coat: hex('#4a4239'), lit: hex('#a8865a'), seed: 1, collar: true, light: 1, belt: true, armR: [0.48, 0.12], armL: [-0.08, 0.18], hem: 0.1 * Math.sin(t * 2) });
       const hand = f._handR;
+      // the stand of wheat he wades through: close vertical blades up to his waist, lit along the top, deep in the stalks
+      const top0 = py - 0.53 * ph;
+      for (let r = 0; r < 8; r++) for (let i = 0; i < 104; i++) {
+        const n = r * 131 + i, hx = 470 + i * 9 + (hash1(n) - 0.5) * 8;
+        const yT = top0 + r * 46 + Math.sin(i * 1.7 + r * 0.9) * 12 + (hash1(n + 7) - 0.5) * 14, len = 72 + 26 * hash1(n + 3);
+        const sw = 0.1 * Math.sin(t * 1.7 - hx * 0.01) + (hash1(n + 5) - 0.5) * 0.18;
+        const col = r === 0 ? mixc(hex('#f0c45a'), hex('#d4a444'), hash1(n + 9)) : mixc(mixc(hex('#d9aa48'), hex('#b8822e'), hash1(n + 9)), hex('#6e4622'), r / 9);
+        s.push({ x: hx + Math.cos(-Math.PI / 2 + sw) * len / 2, y: yT + len / 2, ang: -Math.PI / 2 + sw, len, wid: 9 + 5 * hash1(n + 11), c: col, c2: scalec(col, 0.86), type: KNIFE, taper: r === 0 ? 0.6 : 0.2, seed: 7000 + n, run: 0.1, hgt: 0.85 });
+      }
       for (let k = 0; k < 96; k++) {      // a dense stand of ears in front of the walker, bowing where the hand passes
         const row = k % 4, x = 640 + Math.floor(k / 4) * 34 + row * 9 + Math.sin(k * 2.7) * 9, y = 2420 + row * 46 + Math.sin(k * 3.1) * 10;
         const len = 175 + 35 * Math.sin(k * 1.3) + row * 14, top = y - len;
