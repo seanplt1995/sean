@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><canvas id="c"></canvas>
+<script type="module">
+// one concept frame: node tools/bench.mjs <outdir> concept c=a1
+import { Impasto, Strokes } from '../engine/impasto.js';
+import { paintRef } from '../engine/plate.js';
+import { CONCEPTS } from '../film/concepts/index.js';
+const id = new URLSearchParams(location.search).get('c');
+const E = new Impasto(document.getElementById('c'), { W: 1080, H: 1920, ss: 2 });
+const t0 = performance.now();
+const C = CONCEPTS[id]();
+const S = paintRef(C.ref, Object.assign({ seed: 3, R: [36, 22, 13, 8, 5, 3] }, C.paint || {}));
+const t1 = performance.now();
+const B = E.batch(S.data());
+const tex = E.texture(C.ref.under(1.5));
+const cam = { x: 540, y: 960, zoom: 1 };
+E.begin({ clear: C.clear });
+E.under(tex, C.ref.w, C.ref.h, { cam });
+E.draw(B, { cam });
+if (C.extra) { const s = new Strokes(4096); C.extra(s); E.drawNow(s, { cam }); }
+E.finish(C.post || {});
+await fetch('/png?name=' + id, { method: 'POST', body: E.readRGBA() });
+window.__R = { id, strokes: S.count, paint: ((t1 - t0) / 1000).toFixed(1) + ' s' };
+</script>
