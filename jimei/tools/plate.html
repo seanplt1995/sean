@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><canvas id="c"></canvas>
+<script type="module">
+// one plate through a camera: node tools/bench.mjs <outdir> plate "p=square&x=540&y=1640&z=1&grey=0"
+import { Impasto } from '../engine/impasto.js';
+import { Store } from '../film/store.js';
+import { PLATES } from '../film/plates/index.js';
+const q = new URLSearchParams(location.search), name = q.get('p');
+const E = new Impasto(document.getElementById('c'), { W: 1080, H: 1920, ss: 2 });
+const st = new Store(E, PLATES);
+const t0 = performance.now();
+const p = st.plate(name);
+const cam = { x: +(q.get('x') || p.w / 2), y: +(q.get('y') || p.h / 2), zoom: +(q.get('z') || 1) };
+E.begin({ clear: [0.1, 0.1, 0.12] });
+st.drawLive(name, { cam, t: 1, grey: +(q.get('grey') || 0) });
+E.finish({ amb: +(q.get('amb') || 0.82), dif: 0.3, spec: 0.22, vig: 0.2 });
+await fetch('/png?name=' + (q.get('out') || name), { method: 'POST', body: E.readRGBA() });
+window.__R = { name, strokes: p.strokes ? p.strokes.count : 0, ms: Math.round(performance.now() - t0) };
+</script>

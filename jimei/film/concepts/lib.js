@@ -64,8 +64,8 @@ export function balconyZ(ref, P, X, z0, z1, y, depth, o = {}) {
 }
 // stars: a pale halo, a bright core and four short rays
 export function star(ref, x, y, r, o = {}) {
-  ref.fill({ circle: [x, y, r * 2.6] }, { rad: [x, y, r * 0.4, x, y, r * 2.6], stops: [[0, o.halo || 'rgba(250,236,170,0.75)'], [1, o.sky || 'rgba(60,90,160,0)']] }, { maxR: Math.max(4, r * 0.6), dir: 'edge', group: o.group || 'halo', gmul: 0 });
-  ref.fill({ circle: [x, y, r] }, { rad: [x - r * 0.3, y - r * 0.3, 0, x, y, r], stops: [[0, '#fffbe6'], [1, o.core || '#f6dc78']] }, { maxR: Math.max(2.6, r * 0.5), edge: 1.5, group: (o.group || 'halo') + 'c', gmul: 0 });
+  ref.fill({ circle: [x, y, r * 2.6] }, { rad: [x, y, r * 0.4, x, y, r * 2.6], stops: [[0, o.halo || 'rgba(250,236,170,0.75)'], [1, o.sky || 'rgba(60,90,160,0)']] }, { maxR: Math.max(4, r * 0.6), dir: 'edge', group: o.group || 'halo', gmul: o.gmul != null ? o.gmul : 0 });
+  ref.fill({ circle: [x, y, r] }, { rad: [x - r * 0.3, y - r * 0.3, 0, x, y, r], stops: [[0, '#fffbe6'], [1, o.core || '#f6dc78']] }, { maxR: Math.max(2.6, r * 0.5), edge: 1.5, group: (o.group || 'halo') + 'c', gmul: o.gmul != null ? o.gmul : 0 });
 }
 // a swirl direction field around a centre (Van Gogh skies); returns an angle function for fills
 export const swirl = (cx, cy, k = 1, base = 0) => (x, y) => Math.atan2(y - cy, x - cx) + Math.PI / 2 * k + base;

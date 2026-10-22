@@ -27,7 +27,7 @@ export function firstStroke(out, x, y, o = {}) {
 //     sway (standing weight shift −1…1), coat, lit, trousers, hair, skin, scarf (colour), collar, collarLift,
 //     sit (seat height in h), armL / armR ([upper-arm angle from straight down, + = screen right; elbow bend toward
 //     the body] — front/back views), pockets, hands (false hides them), hem (wind ±), look (+ up / − down),
-//     light (−1 lit from the left, +1 from the right), coatLen, child, longHair (front view), seed, gmul, alpha}
+//     light (−1 lit from the left, +1 from the right), coatLen, child, longHair (front and back views), seed, gmul, alpha}
 export function figure(out, o) {
   const h = o.h, s0 = (o.seed || 0) * 97;
   const facing = o.facing || 'back', side = facing === 'left' || facing === 'right', front = facing === 'front', dir = facing === 'left' ? -1 : 1;
@@ -248,6 +248,17 @@ export function figure(out, o) {
       for (let q = 0; q < 7; q++) {
         const u = -0.9 + q * 0.3, a0 = [hd[0] + u * hw * 0.22, hd[1] - hh * (0.42 - 0.12 * u * u)], b0 = [hd[0] + u * hw * 0.36 + hem * hw * 0.06, hd[1] + hh * (0.3 + 0.1 * Math.cos(q * 2.3) - 0.08 * u * u)];
         blade(a0, b0, hw * 0.24, u * Lr > 0.3 ? hairLit : mixc(hair, hairLit, 0.15 * ((q * 3) % 2)), hair, { taper: 0.85, run: 0.1, bend: -u * 0.12, alpha: al * 0.95 });
+      }
+      if (o.longHair) {
+        // long hair falling past the shoulders to the middle of the back, the ends lifted by the wind
+        const wind = hem, lift = Math.max(0, look);
+        push({ x: hd[0] + wind * hw * 0.25, y: hd[1] + hh * 1.0, ang: Math.PI / 2 - wind * 0.12, len: hh * 2.0, wid: hw * 1.18, c: hair, c2: mixc(hair, hairLit, 0.3), type: DAB, hgt: 0.9 });
+        for (let q = 0; q < 11; q++) {
+          const u = -1 + q * 0.2, a0 = [hd[0] + u * hw * 0.3, hd[1] - hh * (0.3 - 0.1 * u * u)];
+          const L = hh * (2.3 + 0.35 * Math.cos(q * 1.9)) * (1 - 0.15 * lift), sway = wind * hw * (0.5 + 0.5 * Math.abs(u)) + Math.sin(q * 2.1) * hw * 0.08;
+          const b0 = [hd[0] + u * hw * 0.62 + sway, hd[1] + L];
+          blade(a0, b0, hw * (0.2 - 0.04 * Math.abs(u)), u * Lr > 0.2 ? hairLit : mixc(hair, hairLit, 0.18 * (q % 2)), hair, { taper: 0.9, run: 0.08, bend: -u * 0.1 + wind * 0.08, alpha: al * 0.95 });
+        }
       }
       if (o.cheek || look > 0.2) push({ x: hd[0] + Lr * hw * 0.47, y: hd[1] + hh * 0.12, ang: Math.PI / 2 - Lr * 0.2, len: hh * 0.3, wid: hw * 0.16, c: mixc(skin, [1, 0.92, 0.82], 0.1), c2: skin, type: DAB, hgt: 0.7, alpha: al * 0.9 });
     } else {

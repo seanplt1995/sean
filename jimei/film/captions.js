@@ -49,7 +49,8 @@ export class Captions {
     const fade = 0.35;
     this.luma = luma;
     // dark text over a band that is partly dark (a trunk, a coat) gets a soft light halo so every glyph reads
-    const k = Math.min(1, Math.max(0, (dark - 0.15) / 0.12)), haloK = k * k * (3 - 2 * k);
+    // …and over a mid-tone (an orange crown, a dusk sky) dark text always gets it, so it never sits grey on grey
+    const k = Math.min(1, Math.max(0, Math.max((dark - 0.15) / 0.12, (0.64 - luma) / 0.12))), haloK = k * k * (3 - 2 * k);
     const vis = this.list.filter((c) => t >= c.start && t <= c.end);
     const states = vis.map((c) => {
       const a = Math.min(1, (t - c.start) / fade, (c.end - t) / fade);

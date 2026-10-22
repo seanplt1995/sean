@@ -11,7 +11,7 @@ const coats = ['#4a4239', '#3e4a5a', '#6a4a32', '#4a3a3e', '#3e4638', '#5e4a3a']
 const big = new URLSearchParams(location.search).get('big');
 if (big) {
   // the large figures of the film: the hero on the hill (S16/S17), the woman at the window (S05), the walker (S10)
-  figure(s, { x: 230, y: 1800, h: 1150, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, belt: true, hands: false, pockets: true, sway: 0.4, collarLift: 0.7, look: 0.4, cheek: true, hem: 0.3 });
+  figure(s, { x: 230, y: 1800, h: 1150, facing: 'back', coat: hex('#3e3731'), seed: 1, collar: true, light: 1, belt: true, hands: false, sway: 0.4, collarLift: 0.7, look: 0.4, cheek: true, hem: 0.5, longHair: true, hair: hex('#3a2a22'), armL: [0.1, 0.25], armR: [-0.1, 0.25] });
   figure(s, { x: 600, y: 1800, h: 1150, facing: 'front', coat: hex('#3f5266'), skin: hex('#b5856a'), hair: hex('#2a201c'), longHair: true, look: -0.6, tiltHead: -0.4, light: -1, collar: false, scarf: hex('#7a4a40'), armL: [0.25, 0.5], armR: [0.22, 2.05], seed: 41 });
   figure(s, { x: 900, y: 1800, h: 1000, facing: 'back', walk: 0.3, stride: 0.14, coat: hex('#4a4239'), lit: hex('#a8865a'), seed: 1, collar: true, light: 1, belt: true, armR: [0.48, 0.12], armL: [-0.08, 0.18] });
 } else {
