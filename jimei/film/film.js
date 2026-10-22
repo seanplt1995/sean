@@ -44,9 +44,10 @@ export class Film {
     this._band = this._band || new Uint8Array(w * h * 4);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.E.fin.fb);
     gl.readPixels(160, this.E.H - 480, w, h, gl.RGBA, gl.UNSIGNED_BYTE, this._band);
-    let s = 0, n = 0, d = 0;
-    for (let i = 0; i < this._band.length; i += 16) { const l = 0.299 * this._band[i] + 0.587 * this._band[i + 1] + 0.114 * this._band[i + 2]; s += l; d += l < 115; n++; }
+    let s = 0, n = 0, d = 0, br = 0;
+    for (let i = 0; i < this._band.length; i += 16) { const l = 0.299 * this._band[i] + 0.587 * this._band[i + 1] + 0.114 * this._band[i + 2]; s += l; d += l < 115; br += l > 153; n++; }
     this.bandDark = d / n;   // share of the band too dark for dark text: a trunk or a coat behind part of the line
+    this.bandBright = br / n; // share too bright for light text: lit houses, a moon
     return s / n / 255;
   }
   frame(t) {
@@ -58,7 +59,7 @@ export class Film {
     const post = shot.draw(this.F, t) || {};
     E.finish(post);
     const vis = TL.captions.some((c) => t >= c.start && t <= c.end);
-    if (this.caps.draw(t, vis ? this.bandLuma() : 0.2, vis ? this.bandDark : 0)) E.updateTexture(this.capTex, this.caps.canvas);
+    if (this.caps.draw(t, vis ? this.bandLuma() : 0.2, vis ? this.bandDark : 0, vis ? this.bandBright : 0)) E.updateTexture(this.capTex, this.caps.canvas);
     if (this.caps.key) E.overlay(this.capTex, 1);
     return { shot: shot.id, strokes: E.stats.strokes };
   }

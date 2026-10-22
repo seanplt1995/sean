@@ -45,7 +45,7 @@ export class Captions {
     await Promise.all([500, 700].map((w) => document.fonts.load(`${w} 46px ${FONT}`, all)));
   }
   // returns true when the canvas changed
-  draw(t, luma = 0.2, dark = 0) {
+  draw(t, luma = 0.2, dark = 0, bright = 0) {
     const fade = 0.35;
     this.luma = luma;
     // dark text over a band that is partly dark (a trunk, a coat) gets a soft light halo so every glyph reads
@@ -56,9 +56,11 @@ export class Captions {
       const a = Math.min(1, (t - c.start) / fade, (c.end - t) / fade);
       let m = this.mode(c, t, luma); if (m === 'dark') m = 1; else if (m === 'light') m = 0;
       m = Math.round(m * 50) / 50;
-      return { c, a: Math.max(0, a), rise: 6 * (1 - Math.min(1, (t - c.start) / fade)), m, halo: Math.round(haloK * Math.max(0, 1 - 2 * m) * 20) / 20 };
+      // light text over a band with bright patches gets a deeper shadow, drawn twice
+      const deep = Math.round(Math.min(1, Math.max(0, (bright - 0.1) / 0.1)) * Math.max(0, 2 * m - 1) * 20) / 20;
+      return { c, a: Math.max(0, a), rise: 6 * (1 - Math.min(1, (t - c.start) / fade)), m, halo: Math.round(haloK * Math.max(0, 1 - 2 * m) * 20) / 20, deep };
     });
-    const key = states.map((s) => `${s.c.id}:${s.a.toFixed(3)}:${s.rise.toFixed(2)}:${s.m}:${s.halo}`).join('|');
+    const key = states.map((s) => `${s.c.id}:${s.a.toFixed(3)}:${s.rise.toFixed(2)}:${s.m}:${s.halo}:${s.deep}`).join('|');
     if (key === this.key) return false;
     this.key = key;
     const x = this.ctx;
@@ -66,7 +68,7 @@ export class Captions {
     for (const s of states) this._one(s);
     return true;
   }
-  _one({ c, a, rise, m, halo }) {
+  _one({ c, a, rise, m, halo, deep }) {
     const x = this.ctx, size = c.size_px || 46, lh = size * 1.5;
     const light = m < 0.5;
     const mixHex = (a, b, k) => '#' + [0, 2, 4].map((i) => Math.round(parseInt(a.slice(1 + i, 3 + i), 16) * (1 - k) + parseInt(b.slice(1 + i, 3 + i), 16) * k).toString(16).padStart(2, '0')).join('');
@@ -78,7 +80,7 @@ export class Captions {
     x.globalAlpha = a;
     x.textBaseline = 'middle';
     if (halo > 0 && m < 0.5) { x.shadowColor = `rgba(246,240,228,${halo.toFixed(3)})`; x.shadowBlur = 10; x.shadowOffsetY = 0; }
-    else if (m > 0) { x.shadowColor = `rgba(20,16,12,${(0.55 * m).toFixed(3)})`; x.shadowBlur = 8; x.shadowOffsetY = 2; }
+    else if (m > 0) { x.shadowColor = `rgba(20,16,12,${((0.55 + 0.35 * (deep || 0)) * m).toFixed(3)})`; x.shadowBlur = 8 + 4 * (deep || 0); x.shadowOffsetY = 2; }
     const emph = c.emphasis || [];
     ls.forEach((line, li) => {
       // split into runs: plain / emphasised
@@ -103,7 +105,7 @@ export class Captions {
       for (const r of runs) {
         x.font = `${r.st.w} ${size}px ${FONT}`; x.fillStyle = r.st.col; x.textAlign = 'left';
         x.fillText(r.s, px, py);
-        if (halo > 0 && m < 0.5) x.fillText(r.s, px, py);   // a second pass doubles the halo
+        if ((halo > 0 && m < 0.5) || (deep > 0 && m >= 0.5)) x.fillText(r.s, px, py);   // a second pass doubles the halo or shadow
         px += r.w;
       }
     });

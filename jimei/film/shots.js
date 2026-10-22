@@ -872,11 +872,10 @@ const S24 = {
 
 export const SHOTS = [S01, S02, S03, S04, S05, S06, S07, S08, S09, S10, S11, S12, S13, S14, S15, S16, S17, S18, S19, S20, S21, S22, S23, S24];
 
-// captions: warm white with a shadow on dark paint, dark brown on light paint — chosen from the brightness
-// actually behind the band in this frame (sRGB luma; the crossover sits where both colours hold equal contrast).
-// T21 sits over a pale sky crossed by the woman's dark hair, so it stays dark for its whole length with the halo.
-const DARK_LINES = new Set(['T21']);
-export function captionMode(c, t, luma) {
-  if (DARK_LINES.has(c.id)) return 0;
-  return smooth(prog(luma, 0.44, 0.36));
+// captions: warm white with a soft shadow over dark paint, dark brown (with a light halo where it crosses something
+// dark) over light paint. The choice is made per line from the brightness measured behind its band across the whole
+// line, and held: a fade between the two would leave the text grey on grey in the mid-tones.
+const LIGHT_LINES = new Set(['T03', 'T04', 'T05', 'T08', 'T15', 'T16', 'T17', 'T19', 'T26']);
+export function captionMode(c) {
+  return LIGHT_LINES.has(c.id) ? 1 : 0;
 }
